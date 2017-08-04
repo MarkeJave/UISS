@@ -4,6 +4,8 @@
 
 #import "UISSDemoSecondViewController.h"
 
+#import "UISSDemoAppDelegate.h"
+
 @implementation UISSDemoSecondViewController
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -13,6 +15,17 @@
   } else {
       return YES;
   }
+}
+
+- (IBAction)action:(id)sender {
+    static BOOL random = YES;
+    UISS *uiss = [(UISSDemoAppDelegate *)[[UIApplication sharedApplication] delegate] uiss];
+    
+    uiss.style.url = [[NSBundle mainBundle] URLForResource:random ? @"uiss2" : @"uiss" withExtension:@"json"];
+    
+    [uiss reloadStyleAsynchronously];
+    
+    random = (random + 1) % 2;
 }
 
 @end

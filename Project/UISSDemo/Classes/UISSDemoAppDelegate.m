@@ -3,15 +3,12 @@
 //
 
 #import "UISSDemoAppDelegate.h"
-#import "UISS.h"
 
 #if UISS_DEBUG
 #import "UISSAppearancePrivate.h"
 #endif
 
 @interface UISSDemoAppDelegate ()
-
-@property(nonatomic, strong) UISS *uiss;
 
 @end
 
@@ -27,7 +24,7 @@
 //    self.uiss = [UISS configureWithURL:[NSURL URLWithString:@"http://uiss.dev/uiss_demo.json"]];
 
     // Local Style
-    self.uiss = [UISS configureWithDefaultJSONFile];
+    self.uiss = [UISS configureWithJSONFilePath:[[NSBundle mainBundle] pathForResource:@"uiss" ofType:@"json"]];
     self.uiss.statusWindowEnabled = YES;
 
     return YES;

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		085E3AB01F32C9F90014C6B5 /* uiss2.json in Resources */ = {isa = PBXBuildFile; fileRef = 085E3AAF1F32C9F90014C6B5 /* uiss2.json */; };
 		C8D2B032C59FD11A701C83C8 /* UISSSettingDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = C8D2B021E9CB72A0ADBADDEE /* UISSSettingDescriptor.h */; };
 		C8D2B2E56583BF0D585ECFC4 /* UISSSettingsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C8D2B93A4CE1D6D274BC9D3D /* UISSSettingsViewController.h */; };
 		C8D2B403B49E791D1C7C7839 /* UIFont+UISS.m in Sources */ = {isa = PBXBuildFile; fileRef = C8D2B38720F19D0CC0E45FFB /* UIFont+UISS.m */; };
@@ -200,6 +201,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		085E3AAF1F32C9F90014C6B5 /* uiss2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = uiss2.json; sourceTree = "<group>"; };
 		C8D2B021E9CB72A0ADBADDEE /* UISSSettingDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISSSettingDescriptor.h; sourceTree = "<group>"; };
 		C8D2B2AB02BB0DD97B7675C3 /* UISSImageResizingModeValueConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UISSImageResizingModeValueConverter.m; sourceTree = "<group>"; };
 		C8D2B38720F19D0CC0E45FFB /* UIFont+UISS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIFont+UISS.m"; sourceTree = "<group>"; };
@@ -622,6 +624,7 @@
 		E146981715583145000F311F /* UISS */ = {
 			isa = PBXGroup;
 			children = (
+				085E3AAF1F32C9F90014C6B5 /* uiss2.json */,
 				E146981815583167000F311F /* uiss.json */,
 			);
 			path = UISS;
@@ -1099,6 +1102,7 @@
 				E10D5E571574BBA400185009 /* Icon-Small-50.png in Resources */,
 				E10D5E581574BBA400185009 /* Icon-Small-50@2x.png in Resources */,
 				E10D5E591574BBA400185009 /* Icon-Small.png in Resources */,
+				085E3AB01F32C9F90014C6B5 /* uiss2.json in Resources */,
 				E10D5E5A1574BBA400185009 /* Icon-Small@2x.png in Resources */,
 				E10D5E5B1574BBA400185009 /* Icon.png in Resources */,
 				E10D5E5C1574BBA400185009 /* Icon@2x.png in Resources */,

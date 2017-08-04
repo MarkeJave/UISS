@@ -1,10 +1,10 @@
 {
     "Variables": {
-        "tint":"#022944"
+        "tint":"blue"
     },
     "UITabBar": {
         "tintColor": "$tint",
-        "selectedImageTintColor": "red",
+        "selectedImageTintColor": "yellow",
         "UITabBarItem": {
             "titleTextAttributes:normal": {
                 "textColor": "lightGray"
@@ -21,15 +21,17 @@
         "UIButton": {
             "backgroundImage:normal": ["button-background-normal", [0,10,0,10]],
             "backgroundImage:highlighted": ["button-background-highlighted", [0,10,0,10]],
-            "titleColor:normal": ["white", 0.8],
-            "titleColor:highlighted": "white",
+            "titleColor:normal": ["black", 0.8],
+            "titleColor:highlighted": "red",
             "titleEdgeInsets": [1,0,0,0],
             "UILabel": {
                 "font": ["Copperplate-Bold", 18]
             }
         }
     },
-    "UISSCustomView": {
-        "backgroundImage": "background"
+    "UISSCustomContainerView": {
+        "UISSCustomView": {
+            "backgroundImage": "button-background-normal"
+        }
     }
 }

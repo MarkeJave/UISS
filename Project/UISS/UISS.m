@@ -177,8 +177,8 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
 - (void)refreshViews {
     [[NSNotificationCenter defaultCenter] postNotificationName:UISSWillRefreshViewsNotification object:self];
 
-    for (UIWindow *window in [UIApplication sharedApplication].windows) {
-        for (UIView *view in window.subviews) {
+    for (UIWindow *window in UIApplication.sharedApplication.windows) {
+        for (UIView *view in [[window subviews] copy]) {
             [view removeFromSuperview];
             [window addSubview:view];
         }
