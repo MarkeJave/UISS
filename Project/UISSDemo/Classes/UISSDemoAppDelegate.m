@@ -21,11 +21,11 @@
     }
 
     // Remote Style
-//    self.uiss = [UISS configureWithURL:[NSURL URLWithString:@"http://uiss.dev/uiss_demo.json"]];
+//    self.uiss = [UISS uissWithURL:[NSURL URLWithString:@"http://uiss.dev/uiss_demo.json"]];
 
     // Local Style
-    self.uiss = [UISS configureWithJSONFilePath:[[NSBundle mainBundle] pathForResource:@"uiss" ofType:@"json"]];
-    self.uiss.statusWindowEnabled = YES;
+    self.uiss = [UISS defaultUISS];
+    self.uiss.debugEnabled = YES;
 
     return YES;
 }

@@ -13,19 +13,55 @@ NSString *const UISSStyleDidParseDataNotification = @"UISSStyleDidParseDataNotif
 NSString *const UISSStyleWillParseDictionaryNotification = @"UISSStyleWillParseDictionaryNotification";
 NSString *const UISSStyleDidParseDictionaryNotification = @"UISSStyleDidParseDictionaryNotification";
 
+@interface UISSStyle ()
+
+@property (nonatomic, strong) NSURL *URL;
+@property (nonatomic, strong) NSData *data;
+
+@property (nonatomic, strong) NSArray *propertySettersPad;
+@property (nonatomic, strong) NSArray *propertySettersPhone;
+
+@property (nonatomic, strong) NSMutableArray *errors;
+
+@end
+
 @implementation UISSStyle
 
-- (id)init {
-    self = [super init];
-    if (self) {
++ (instancetype)styleWithURL:(NSURL *)URL;{
+    return [[self alloc] initWithURL:URL];
+}
+
+- (instancetype)initWithURL:(NSURL *)URL;{
+    if (self = [super init]) {
         self.errors = [NSMutableArray array];
+        self.URL = URL;
     }
     return self;
 }
 
-- (void)setUrl:(NSURL *)url {
-    if (_url != url) {
-        _url = url;
++ (instancetype)styleWithData:(NSData *)data;{
+    return [[self alloc] initWithData:data];
+}
+
+- (instancetype)initWithData:(NSData *)data;{
+    if (self = [super init]) {
+        self.errors = [NSMutableArray array];
+        self.data = data;
+    }
+    return self;
+}
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        
+    }
+    return self;
+}
+
+- (void)setURL:(NSURL *)URL {
+    if (_URL != URL) {
+        _URL = URL;
 
         self.data = nil;
     }
@@ -77,7 +113,7 @@ NSString *const UISSStyleDidParseDictionaryNotification = @"UISSStyleDidParseDic
     BOOL downloadedNewStyle = NO;
 
     NSError *error;
-    NSData *data = [NSData dataWithContentsOfURL:self.url
+    NSData *data = [NSData dataWithContentsOfURL:self.URL
                                          options:(NSDataReadingOptions) 0
                                            error:&error];
 

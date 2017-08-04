@@ -16,15 +16,24 @@ extern NSString *const UISSStyleDidParseDictionaryNotification;
 
 @interface UISSStyle : NSObject
 
-@property (nonatomic, strong) NSURL *url;
+@property (nonatomic, strong, readonly) NSURL *URL;
 
-@property (nonatomic, strong) NSData *data;
-@property (nonatomic, strong) NSDictionary *dictionary;
+@property (nonatomic, strong, readonly) NSData *data;
+@property (nonatomic, strong, readonly) NSDictionary *dictionary;
 
-@property (nonatomic, strong) NSArray *propertySettersPad;
-@property (nonatomic, strong) NSArray *propertySettersPhone;
+@property (nonatomic, strong, readonly) NSArray *propertySettersPad;
+@property (nonatomic, strong, readonly) NSArray *propertySettersPhone;
 
-@property (nonatomic, strong) NSMutableArray *errors;
+@property (nonatomic, strong, readonly) NSMutableArray *errors;
+
++ (instancetype)new UNAVAILABLE_ATTRIBUTE;
+- (instancetype)init UNAVAILABLE_ATTRIBUTE;
+
++ (instancetype)styleWithURL:(NSURL *)URL;
+- (instancetype)initWithURL:(NSURL *)URL;
+
++ (instancetype)styleWithData:(NSData *)data;
+- (instancetype)initWithData:(NSData *)data;
 
 - (BOOL)downloadData;
 - (BOOL)parseData;

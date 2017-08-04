@@ -25,76 +25,92 @@
 #import "UISSDisabledKeysPreprocessor.h"
 #import "UISSTextAlignmentValueConverter.h"
 
+@interface UISSConfig ()
+
+@property(nonatomic, strong) NSArray<UISSArgumentValueConverter> *propertyValueConverters;
+@property(nonatomic, strong) NSArray<UISSArgumentValueConverter> *axisParameterValueConverters;
+@property(nonatomic, strong) NSArray<UISSDictionaryPreprocessor> *preprocessors;
+
+@end
+
 @implementation UISSConfig
 
-+ (UISSConfig *)sharedConfig;
++ (UISSConfig *)defaultConfig;
 {
-    static UISSConfig *sharedConfig;
+    static UISSConfig *defaultConfig;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedConfig = [[UISSConfig alloc] init];
+        defaultConfig = [[UISSConfig alloc] init];
     });
     
-    return sharedConfig;
+    return defaultConfig;
 }
 
-- (NSArray *)defaultPropertyValueConverters
-{
-    return [NSArray arrayWithObjects:
-                            [[UISSColorValueConverter alloc] init],
-                            [[UISSImageValueConverter alloc] init],
-                            [[UISSFontValueConverter alloc] init],
-                            [[UISSTextAttributesValueConverter alloc] init],
-
-                            [[UISSSizeValueConverter alloc] init],
-                            [[UISSPointValueConverter alloc] init],
-                            [[UISSEdgeInsetsValueConverter alloc] init],
-                            [[UISSRectValueConverter alloc] init],
-                            [[UISSOffsetValueConverter alloc] init],
-            
-                            [[UISSTextAlignmentValueConverter alloc] init],
-
-                            [[UISSIntegerValueConverter alloc] init],
-                            [[UISSUIntegerValueConverter alloc] init],
-                            [[UISSFloatValueConverter alloc] init],
-                            nil];
++ (instancetype)configWithPropertyValueConverters:(NSArray<UISSArgumentValueConverter> *)propertyValueConverters axisParameterValueConverters:(NSArray<UISSArgumentValueConverter> *)axisParameterValueConverters preprocessors:(NSArray<UISSDictionaryPreprocessor> *)preprocessors;{
+    return [[self alloc] initWithPropertyValueConverters:propertyValueConverters axisParameterValueConverters:axisParameterValueConverters preprocessors:preprocessors];
 }
 
-- (NSArray *)defaultAxisParameterValueConverters
-{
-    return [NSArray arrayWithObjects:
-                            [[UISSBarMetricsValueConverter alloc] init],
-                            [[UISSControlStateValueConverter alloc] init],
-                            [[UISSSegmentedControlSegmentValueConverter alloc] init],
-                            [[UISSToolbarPositionValueConverter alloc] init],
-                            [[UISSSearchBarIconValueConverter alloc] init],
-
-                            [[UISSIntegerValueConverter alloc] init],
-                            [[UISSUIntegerValueConverter alloc] init],
-                            nil];
+- (instancetype)initWithPropertyValueConverters:(NSArray<UISSArgumentValueConverter> *)propertyValueConverters axisParameterValueConverters:(NSArray<UISSArgumentValueConverter> *)axisParameterValueConverters preprocessors:(NSArray<UISSDictionaryPreprocessor> *)preprocessors;{
+    if (self = [super init]) {
+        self.propertyValueConverters = propertyValueConverters;
+        self.axisParameterValueConverters = axisParameterValueConverters;
+        self.preprocessors = preprocessors;
+    }
+    return self;
 }
 
-- (NSArray *)defaultPreprocessors
-{
-    return [NSArray arrayWithObjects:
-                            [[UISSDisabledKeysPreprocessor alloc] init],
-                            [[UISSUserInterfaceIdiomPreprocessor alloc] init],
-                            [[UISSVariablesPreprocessor alloc] init],
-                            nil];
-}
 
-- (id)init
-{
-    self = [super init];
-    
-    if (self) {
-        self.propertyValueConverters = [self defaultPropertyValueConverters];
-        self.axisParameterValueConverters = [self defaultAxisParameterValueConverters];
-        self.preprocessors = [self defaultPreprocessors];
+- (id)init {
+    if (self = [super init]) {
+        self.propertyValueConverters = [[self class] defaultPropertyValueConverters];
+        self.axisParameterValueConverters = [[self class] defaultAxisParameterValueConverters];
+        self.preprocessors = [[self class] defaultPreprocessors];
     }
     
     return self;
 }
 
+
++ (NSArray<UISSArgumentValueConverter> *)defaultPropertyValueConverters {
+    return [NSArray<UISSArgumentValueConverter> arrayWithObjects:
+            [[UISSColorValueConverter alloc] init],
+            [[UISSImageValueConverter alloc] init],
+            [[UISSFontValueConverter alloc] init],
+            [[UISSTextAttributesValueConverter alloc] init],
+            
+            [[UISSSizeValueConverter alloc] init],
+            [[UISSPointValueConverter alloc] init],
+            [[UISSEdgeInsetsValueConverter alloc] init],
+            [[UISSRectValueConverter alloc] init],
+            [[UISSOffsetValueConverter alloc] init],
+            
+            [[UISSTextAlignmentValueConverter alloc] init],
+            
+            [[UISSIntegerValueConverter alloc] init],
+            [[UISSUIntegerValueConverter alloc] init],
+            [[UISSFloatValueConverter alloc] init],
+            nil];
+}
+
++ (NSArray<UISSArgumentValueConverter> *)defaultAxisParameterValueConverters {
+    return [NSArray<UISSArgumentValueConverter> arrayWithObjects:
+            [[UISSBarMetricsValueConverter alloc] init],
+            [[UISSControlStateValueConverter alloc] init],
+            [[UISSSegmentedControlSegmentValueConverter alloc] init],
+            [[UISSToolbarPositionValueConverter alloc] init],
+            [[UISSSearchBarIconValueConverter alloc] init],
+            
+            [[UISSIntegerValueConverter alloc] init],
+            [[UISSUIntegerValueConverter alloc] init],
+            nil];
+}
+
++ (NSArray<UISSDictionaryPreprocessor> *)defaultPreprocessors {
+    return [NSArray<UISSDictionaryPreprocessor> arrayWithObjects:
+            [[UISSDisabledKeysPreprocessor alloc] init],
+            [[UISSUserInterfaceIdiomPreprocessor alloc] init],
+            [[UISSVariablesPreprocessor alloc] init],
+            nil];
+}
 
 @end

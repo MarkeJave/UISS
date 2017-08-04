@@ -13,30 +13,27 @@ extern NSString *const UISSDidRefreshViewsNotification;
 
 @interface UISS : NSObject
 
-@property(nonatomic, strong) UISSConfig *config;
-@property(nonatomic, assign) BOOL statusWindowEnabled;
+@property(nonatomic, strong, readonly) UISSConfig *config;
 
-@property(nonatomic) NSTimeInterval autoReloadTimeInterval;
-@property(nonatomic) BOOL autoReloadEnabled;
+@property(nonatomic, strong, readonly) UISSStyle *style;
 
-@property(nonatomic, strong) UISSStyle *style;
+@property(nonatomic, assign, readonly) NSTimeInterval delayTimeInterval;
 
-- (void)loadStyleSynchronously;
+@property(nonatomic, assign) BOOL debugEnabled;
 
-- (void)reloadStyleAsynchronously;
+- (UISS *)initWithURL:(NSURL *)URL config:(UISSConfig *)config;
++ (UISS *)UISSWithURL:(NSURL *)URL config:(UISSConfig *)config;
+
++ (UISS *)defaultUISS;
++ (UISS *)defaultUISSWithURL:(NSURL *)URL;
+
+- (void)load;
+- (void)reload; // Asynchronously
+- (void)reloadWithURL:(NSURL *)URL; // Asynchronously
+- (void)reloadWithURL:(NSURL *)URL delay:(NSTimeInterval)delay;
 
 // code handler is called on main thread
 - (void)generateCodeForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom
                               codeHandler:(void (^)(NSString *code, NSArray *errors))codeHandler;
-
-- (void)presentConsoleViewController;
-
-#pragma mark - Factory Methods
-
-+ (UISS *)configureWithJSONFilePath:(NSString *)filePath;
-
-+ (UISS *)configureWithDefaultJSONFile;
-
-+ (UISS *)configureWithURL:(NSURL *)url;
 
 @end

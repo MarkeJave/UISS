@@ -28,11 +28,17 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
 @property(nonatomic, strong) UISSStatusViewController *statusWindowController;
 @property(nonatomic, strong) UISSStatusWindow *statusWindow;
 
-@property(nonatomic, strong) NSTimer *autoReloadTimer;
+@property(nonatomic, strong) NSTimer *delayLoadTimer;
 
 @property(nonatomic, strong) UISSCodeGenerator *codeGenerator;
 
 @property(nonatomic, strong) NSMutableArray *configuredAppearanceProxies;
+
+@property(nonatomic, assign) NSTimeInterval delayTimeInterval;
+
+@property(nonatomic, strong) UISSConfig *config;
+
+@property(nonatomic, strong) UISSStyle *style;
 
 // all style parsing is done on the queue
 #if OS_OBJECT_USE_OBJC
@@ -50,19 +56,21 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
 - (id)init {
     self = [super init];
     if (self) {
-        self.config = [UISSConfig sharedConfig];
-        self.style = [[UISSStyle alloc] init];
-
         self.queue = dispatch_queue_create("com.robertwijas.uiss.queue", DISPATCH_QUEUE_SERIAL);
-
         self.codeGenerator = [[UISSCodeGenerator alloc] init];
-
 #if UISS_DEBUG
         [self logDebugMessageOnce];
         self.configuredAppearanceProxies = [NSMutableArray array];
 #endif
     }
+    return self;
+}
 
+- (UISS *)initWithURL:(NSURL *)URL config:(UISSConfig *)config;{
+    if (self = [self init]) {
+        self.style = [UISSStyle styleWithURL:URL];
+        self.config = config;
+    }
     return self;
 }
 
@@ -79,32 +87,17 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
     });
 }
 
-#pragma mark - Factory Methods
-
-+ (UISS *)configureWithJSONFilePath:(NSString *)filePath {
-    UISS *uiss = [[UISS alloc] init];
-    uiss.style.url = [NSURL fileURLWithPath:filePath];
-    [uiss loadStyleSynchronously];
-    return uiss;
++ (UISS *)UISSWithURL:(NSURL *)URL config:(UISSConfig *)config;{
+    return [[self alloc] initWithURL:URL config:config];
 }
 
-+ (UISS *)configureWithDefaultJSONFile {
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"uiss" ofType:@"json"];
-    return [self configureWithJSONFilePath:filePath];
++ (UISS *)defaultUISS; {
+    NSURL *defaultURL = [[NSBundle mainBundle] URLForResource:@"uiss" withExtension:@"json"];
+    return [self defaultUISSWithURL:defaultURL];
 }
 
-+ (UISS *)configureWithURL:(NSURL *)url {
-    UISS *uiss = [[UISS alloc] init];
-
-    uiss.style.url = url;
-    uiss.statusWindowEnabled = YES;
-
-    [uiss loadStyleSynchronously];
-
-    uiss.autoReloadTimeInterval = 5;
-    uiss.autoReloadEnabled = YES;
-
-    return uiss;
++ (UISS *)defaultUISSWithURL:(NSURL *)URL; {
+    return [[self alloc] initWithURL:URL config:[UISSConfig defaultConfig]];
 }
 
 #pragma mark - Reloading Style
@@ -140,7 +133,23 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
     [[NSNotificationCenter defaultCenter] postNotificationName:UISSDidApplyStyleNotification object:self];
 }
 
-- (void)reloadStyleAsynchronously {
+- (void)reloadWithURL:(NSURL *)URL;{
+    [self reloadWithURL:URL delay:0];
+}
+
+- (void)reloadWithURL:(NSURL *)URL delay:(NSTimeInterval)delay;{
+    self.style = [UISSStyle styleWithURL:URL];
+    
+    if (delay > 0) {
+        self.delayTimeInterval = delay;
+        
+        [self updateDelayLoadTimer];
+    } else {
+        [self reload];
+    }
+}
+
+- (void)reload {
     dispatch_async(self.queue, ^{
         // if new data downloaded
         if ([self.style downloadData]) {
@@ -159,7 +168,7 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
     });
 }
 
-- (void)loadStyleSynchronously {
+- (void)load {
     __block NSArray *propertySetters = nil;
 
     dispatch_sync(self.queue, ^{
@@ -167,7 +176,7 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
         if ([self.style parseDictionaryForUserInterfaceIdiom:userInterfaceIdiom withConfig:self.config]) {
             propertySetters = [self.style propertySettersForUserInterfaceIdiom:userInterfaceIdiom];
         }
-   });
+    });
 
     if (propertySetters) {
         [self configureAppearanceWithPropertySetters:propertySetters errors:self.style.errors];
@@ -222,46 +231,37 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
 
 #pragma mark - Auto Reload
 
-- (void)updateAutoReloadTimer {
-    if (self.autoReloadEnabled && self.autoReloadTimeInterval) {
-        self.autoReloadTimer = [NSTimer scheduledTimerWithTimeInterval:self.autoReloadTimeInterval
+- (void)updateDelayLoadTimer {
+    if (self.delayTimeInterval > 0) {
+        self.delayLoadTimer = [NSTimer scheduledTimerWithTimeInterval:self.delayTimeInterval
                                                                 target:self
-                                                              selector:@selector(reloadStyleAsynchronously)
+                                                              selector:@selector(reload)
                                                               userInfo:nil repeats:YES];
     } else {
-        self.autoReloadTimer = nil;
+        self.delayLoadTimer = nil;
     }
 }
 
-- (void)setAutoReloadTimer:(NSTimer *)autoReloadTimer {
-    [_autoReloadTimer invalidate];
-    _autoReloadTimer = autoReloadTimer;
-}
-
-- (void)setAutoReloadTimeInterval:(NSTimeInterval)autoReloadTimeInterval {
-    _autoReloadTimeInterval = autoReloadTimeInterval;
-    [self updateAutoReloadTimer];
-}
-
-- (void)setAutoReloadEnabled:(BOOL)autoReloadEnabled {
-    _autoReloadEnabled = autoReloadEnabled;
-    [self updateAutoReloadTimer];
+- (void)setAutoReloadTimer:(NSTimer *)delayLoadTimer {
+    [_delayLoadTimer invalidate];
+    _delayLoadTimer = delayLoadTimer;
 }
 
 #pragma mark - Status Window
 
-- (BOOL)statusWindowEnabled {
+- (BOOL)debugEnabled {
     return self.statusWindow != nil;
 }
 
-- (void)setStatusWindowEnabled:(BOOL)statusWindowEnabled {
-    if (statusWindowEnabled) {
+- (void)setDebugEnabled:(BOOL)debugEnabled {
+    if (debugEnabled) {
         if (self.statusWindowController == nil) {
             // configure Console
             NSString *filePath = [[NSBundle mainBundle] pathForResource:@"uiss_console" ofType:@"json"
                                                             inDirectory:@"UISSResources.bundle"];
             if (filePath) {
-                [UISS configureWithJSONFilePath:filePath];
+                UISS *uiss = [UISS defaultUISSWithURL:[NSURL fileURLWithPath:filePath]];
+                [uiss load];
             }
 
             self.statusWindow = [[UISSStatusWindow alloc] init];
@@ -277,7 +277,6 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
         self.statusWindow = nil;
     }
 }
-
 
 #pragma mark - Console
 

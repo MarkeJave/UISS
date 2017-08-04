@@ -17,7 +17,7 @@
     [super setUp];
 
     NSString *jsonFilePath = [[NSBundle bundleForClass:[self class]] pathForResource:@"example" ofType:@"json"];
-    self.uiss = [UISS configureWithJSONFilePath:jsonFilePath];
+    self.uiss = [UISS uissWithJSONFilePath:jsonFilePath];
 }
 
 - (void)testGeneratedCodeForPad; {

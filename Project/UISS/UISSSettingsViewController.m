@@ -37,22 +37,11 @@
     styleUrl.title = @"Style URL";
     styleUrl.info = @"You can provide an URL to your UISS JSON file.";
     styleUrl.keyboardType = UIKeyboardTypeURL;
-    styleUrl.valueProvider = ^{
-        return uiss.style.url.absoluteString;
+    styleUrl.valueProvider = ^NSString *{
+        return uiss.style.URL.absoluteString;
     };
     styleUrl.valueChangeHandler = ^(id value) {
-        uiss.style.url = [NSURL URLWithString:value];
-    };
-
-    UISSSettingDescriptor *autoReloadEnabled = [[UISSSettingDescriptor alloc] init];
-    autoReloadEnabled.title = @"Auto Reload";
-    autoReloadEnabled.label = @"Enabled";
-    autoReloadEnabled.editorType = UISSSettingDescriptorEditorTypeSwitch;
-    autoReloadEnabled.valueProvider = ^{
-        return [NSNumber numberWithBool:uiss.autoReloadEnabled];
-    };
-    autoReloadEnabled.valueChangeHandler = ^(id value) {
-        uiss.autoReloadEnabled = [value boolValue];
+        [uiss reloadWithURL:[NSURL URLWithString:value]];
     };
 
     UISSSettingDescriptor *autoReloadInterval = [[UISSSettingDescriptor alloc] init];
@@ -60,10 +49,10 @@
     autoReloadInterval.label = @"In Seconds";
     autoReloadInterval.keyboardType = UIKeyboardTypeDecimalPad;
     autoReloadInterval.valueProvider = ^{
-        return [NSNumber numberWithDouble:uiss.autoReloadTimeInterval];
+        return [NSNumber numberWithDouble:uiss.delayTimeInterval];
     };
     autoReloadInterval.valueChangeHandler = ^(id value) {
-        uiss.autoReloadTimeInterval = [value doubleValue];
+        [uiss reloadWithURL:[[uiss style] URL] delay:[value doubleValue]];
     };
 
     UISSSettingDescriptor *statusWindowEnabled = [[UISSSettingDescriptor alloc] init];
@@ -71,13 +60,13 @@
     statusWindowEnabled.label = @"Visible";
     statusWindowEnabled.editorType = UISSSettingDescriptorEditorTypeSwitch;
     statusWindowEnabled.valueProvider = ^{
-        return [NSNumber numberWithBool:uiss.statusWindowEnabled];
+        return [NSNumber numberWithBool:[uiss debugEnabled]];
     };
     statusWindowEnabled.valueChangeHandler = ^(id value) {
-        uiss.statusWindowEnabled = [value boolValue];
+        uiss.debugEnabled = [value boolValue];
     };
 
-    self.settingDescriptors = @[styleUrl, autoReloadEnabled, autoReloadInterval, statusWindowEnabled];
+    self.settingDescriptors = @[styleUrl, autoReloadInterval, statusWindowEnabled];
 }
 
 #pragma mark - View

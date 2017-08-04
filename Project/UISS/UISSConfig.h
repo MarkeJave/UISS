@@ -4,20 +4,23 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol UISSArgumentValueConverter, UISSDictionaryPreprocessor;
+
 @interface UISSConfig : NSObject
 
-@property(nonatomic, strong) NSArray *propertyValueConverters;
-@property(nonatomic, strong) NSArray *axisParameterValueConverters;
-@property(nonatomic, strong) NSArray *preprocessors;
+@property(nonatomic, strong, readonly) NSArray<UISSArgumentValueConverter> *propertyValueConverters;
+@property(nonatomic, strong, readonly) NSArray<UISSArgumentValueConverter> *axisParameterValueConverters;
+@property(nonatomic, strong, readonly) NSArray<UISSDictionaryPreprocessor> *preprocessors;
 
-+ (UISSConfig *)sharedConfig;
++ (UISSConfig *)defaultConfig;
+
++ (instancetype)configWithPropertyValueConverters:(NSArray<UISSArgumentValueConverter> *)propertyValueConverters axisParameterValueConverters:(NSArray<UISSArgumentValueConverter> *)axisParameterValueConverters preprocessors:(NSArray *)preprocessors;
+- (instancetype)initWithPropertyValueConverters:(NSArray<UISSArgumentValueConverter> *)propertyValueConverters axisParameterValueConverters:(NSArray<UISSArgumentValueConverter> *)axisParameterValueConverters preprocessors:(NSArray<UISSDictionaryPreprocessor> *)preprocessors;
 
 #pragma mark - Default
 
-- (NSArray *)defaultPropertyValueConverters;
-
-- (NSArray *)defaultAxisParameterValueConverters;
-
-- (NSArray *)defaultPreprocessors;
++ (NSArray<UISSArgumentValueConverter> *)defaultPropertyValueConverters;
++ (NSArray<UISSArgumentValueConverter> *)defaultAxisParameterValueConverters;
++ (NSArray<UISSDictionaryPreprocessor> *)defaultPreprocessors;
 
 @end

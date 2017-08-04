@@ -15,7 +15,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.config = [UISSConfig sharedConfig];
+        self.config = [UISSConfig defaultConfig];
         self.userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
         self.groupPrefix = UISS_PARSER_DEFAULT_GROUP_PREFIX;
     }
