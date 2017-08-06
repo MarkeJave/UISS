@@ -2,10 +2,10 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "UISSEdgeInsetsValueConverter.h"
 
-@interface UISSEdgeInsetsValueConverterTests : SenTestCase
+@interface UISSEdgeInsetsValueConverterTests : XCTestCase
 
 @property(nonatomic, strong) UISSEdgeInsetsValueConverter *converter;
 
@@ -30,10 +30,10 @@
     id converted = [self.converter convertValue:value];
     NSString *code = [self.converter generateCodeForValue:value];
 
-    STAssertNotNil(converted, nil);
-    STAssertEquals([converted UIEdgeInsetsValue], UIEdgeInsetsMake(1, 2, 3, 4), nil);
+    XCTAssertNotNil(converted, @"");
+    XCTAssertEqual(converted, [NSValue valueWithUIEdgeInsets:UIEdgeInsetsMake(1, 2, 3, 4)], @"");
 
-    STAssertEqualObjects(code, @"UIEdgeInsetsMake(1.0, 2.0, 3.0, 4.0)", nil);
+    XCTAssertEqual(code, @"UIEdgeInsetsMake(1.0, 2.0, 3.0, 4.0)", @"");
 }
 
 @end

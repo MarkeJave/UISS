@@ -2,11 +2,11 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import <objc/runtime.h>
 #import "UISSAppearancePrivate.h"
 
-@interface UISSPrivateAppearanceMethodsTests : SenTestCase
+@interface UISSPrivateAppearanceMethodsTests : XCTestCase
 
 @end
 
@@ -34,13 +34,13 @@
 
 - (void)testAppearanceInvocationsGetterExistence; {
     id appearance = [UIView appearance];
-    STAssertTrue([appearance respondsToSelector:@selector(_appearanceInvocations)], @"UISS assumes that appearance has _appearanceInvocations method");
+    XCTAssertTrue([appearance respondsToSelector:@selector(_appearanceInvocations)], @"UISS assumes that appearance has _appearanceInvocations method");
 
     // just to create first appearance invocation
     [appearance setBackgroundColor:[UIColor redColor]];
 
     id appearanceInvocations = [appearance _appearanceInvocations];
-    STAssertTrue([appearanceInvocations isKindOfClass:[NSMutableArray class]], @"UISS assumes that _appearanceInvocations returns NSMutableArray");
+    XCTAssertTrue([appearanceInvocations isKindOfClass:[NSMutableArray class]], @"UISS assumes that _appearanceInvocations returns NSMutableArray");
 }
 
 - (void)testClearingAllAppearanceInvocations; {
@@ -48,12 +48,12 @@
     [appearance setTintColor:[UIColor redColor]];
 
     NSMutableArray *appearanceInvocations = [appearance _appearanceInvocations];
-    STAssertTrue(appearanceInvocations.count > 0, @"should have at least one invocation");
+    XCTAssertTrue(appearanceInvocations.count > 0, @"should have at least one invocation");
     [appearanceInvocations removeAllObjects];
 
     appearance = [UIToolbar appearance];
     appearanceInvocations = [appearance _appearanceInvocations];
-    STAssertTrue(appearanceInvocations.count == 0, @"all invocations should have been removed");
+    XCTAssertTrue(appearanceInvocations.count == 0, @"all invocations should have been removed");
 }
 
 #endif

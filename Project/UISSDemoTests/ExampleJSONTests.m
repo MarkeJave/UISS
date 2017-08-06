@@ -3,9 +3,9 @@
 //
 
 #import "UISS.h"
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface ExampleJSONTests : SenTestCase
+@interface ExampleJSONTests : XCTestCase
 
 @property(nonatomic, strong) UISS *uiss;
 
@@ -16,57 +16,57 @@
 - (void)setUp {
     [super setUp];
 
-    NSString *jsonFilePath = [[NSBundle bundleForClass:[self class]] pathForResource:@"example" ofType:@"json"];
-    self.uiss = [UISS uissWithJSONFilePath:jsonFilePath];
+    NSURL *fileURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"example" withExtension:@"json"];
+    self.uiss = [UISS defaultUISSWithURL:fileURL];
 }
 
 - (void)testGeneratedCodeForPad; {
     [self.uiss generateCodeForUserInterfaceIdiom:UIUserInterfaceIdiomPad
                                      codeHandler:^(NSString *code, NSArray *errors) {
-                                         STAssertTrue(errors.count == 0, @"errors are unexpected");
-                                         STAssertNotNil(code, nil);
-                                         STAssertTrue([code rangeOfString:@"[[UINavigationBar appearance] setTintColor:[UIColor greenColor]];"].location != NSNotFound, nil);
+                                         XCTAssertTrue(errors.count == 0, @"errors are unexpected");
+                                         XCTAssertNotNil(code, @"");
+                                         XCTAssertTrue([code rangeOfString:@"[[UINavigationBar appearance] setTintColor:[UIColor greenColor]];"].location != NSNotFound, @"");
                                      }];
 }
 
 - (void)testGeneratedCodeForPhone; {
     [self.uiss generateCodeForUserInterfaceIdiom:UIUserInterfaceIdiomPhone
                                      codeHandler:^(NSString *code, NSArray *errors) {
-                                         STAssertTrue(errors.count == 0, @"errors are unexpected");
-                                         STAssertNotNil(code, nil);
-                                         STAssertTrue([code rangeOfString:@"[[UINavigationBar appearance] setTintColor:[UIColor redColor]];"].location != NSNotFound, nil);
+                                         XCTAssertTrue(errors.count == 0, @"errors are unexpected");
+                                         XCTAssertNotNil(code, @"");
+                                         XCTAssertTrue([code rangeOfString:@"[[UINavigationBar appearance] setTintColor:[UIColor redColor]];"].location != NSNotFound, @"");
                                      }];
 }
 
 - (void)testToolbarTintColor; {
-    STAssertEqualObjects([[UIToolbar appearance] tintColor], [UIColor yellowColor], nil);
+    XCTAssertEqual([[UIToolbar appearance] tintColor], [UIColor yellowColor], @"");
 }
 
 - (void)testToolbarBackgroundImage; {
     UIImage *backgroundImage = [[UIToolbar appearance] backgroundImageForToolbarPosition:UIToolbarPositionAny
                                                                               barMetrics:UIBarMetricsDefault];
-    STAssertNotNil(backgroundImage, nil);
-    STAssertEqualObjects([backgroundImage class], [UIImage class], @"bad property class", nil);
+    XCTAssertNotNil(backgroundImage, @"");
+    XCTAssertEqual([backgroundImage class], [UIImage class], @"bad property class");
 }
 
 - (void)testTabBarItemTitlePositionAdjustment; {
-    UIOffset titlePositionAdjustment = [[UITabBarItem appearance] titlePositionAdjustment];
-    STAssertEquals(titlePositionAdjustment, UIOffsetMake(10, 10), nil);
+    NSValue *titlePositionAdjustment = [NSValue valueWithUIOffset:[[UITabBarItem appearance] titlePositionAdjustment]];
+    XCTAssertEqual(titlePositionAdjustment, [NSValue valueWithUIOffset:UIOffsetMake(10, 10)], @"");
 }
 
 - (void)testNavigationBarTitleVerticalPositionAdjustment; {
-    STAssertEquals([[UINavigationBar appearance] titleVerticalPositionAdjustmentForBarMetrics:UIBarMetricsDefault], 10.0f, nil);
+    XCTAssertEqual(@([[UINavigationBar appearance] titleVerticalPositionAdjustmentForBarMetrics:UIBarMetricsDefault]), @10.0f, @"");
 }
 
 - (void)testNavigationBarBackgroundImageForBarMetricsLandscapePhone; {
-    STAssertNotNil([[UINavigationBar appearance] backgroundImageForBarMetrics:UIBarMetricsLandscapePhone], nil);
+    XCTAssertNotNil([[UINavigationBar appearance] backgroundImageForBarMetrics:UIBarMetricsLandscapePhone], @"");
 }
 
 - (void)testTabBarItemTitleTextAttributes; {
     UIFont *font = [[UITabBarItem appearance] titleTextAttributesForState:UIControlStateNormal][UITextAttributeFont];
-    STAssertNotNil(font, nil);
+    XCTAssertNotNil(font, @"");
     if (font) {
-        STAssertEqualObjects(font, [UIFont systemFontOfSize:24], nil);
+        XCTAssertEqual(font, [UIFont systemFontOfSize:24], @"");
     }
 }
 

@@ -2,11 +2,11 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "UISSCodeGenerator.h"
 #import "UISSPropertySetter.h"
 
-@interface UISSCodeGeneratorTests : SenTestCase
+@interface UISSCodeGeneratorTests : XCTestCase
 
 @property(nonatomic, strong) UISSCodeGenerator *codeGenerator;
 
@@ -25,15 +25,15 @@
 
     propertySetter.property = property;
 
-    NSMutableArray *errors = [NSMutableArray array];
+    NSArray *errors = nil;
 
-    NSString *code = [self.codeGenerator generateCodeForPropertySetters:@[propertySetter] errors:errors];
+    NSString *code = [self.codeGenerator generateCodeForPropertySetters:@[propertySetter] errors:&errors];
 
-    STAssertNotNil(code, nil);
-    STAssertEquals(errors.count, (NSUInteger) 0, nil);
+    XCTAssertNotNil(code, @"");
+    XCTAssertEqual(errors && errors.count, (NSUInteger) 0, @"");
 
     NSString *expectedCode = [NSString stringWithFormat:@"// Group\n%@\n", [propertySetter generatedCode]];
-    STAssertEqualObjects(code, expectedCode, nil);
+    XCTAssertEqual(code, expectedCode, @"");
 }
 
 - (void)setUp; {

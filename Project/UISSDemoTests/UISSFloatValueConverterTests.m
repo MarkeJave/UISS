@@ -2,10 +2,10 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "UISSFloatValueConverter.h"
 
-@interface UISSFloatValueConverterTests : SenTestCase
+@interface UISSFloatValueConverterTests : XCTestCase
 
 @property(nonatomic, strong) UISSFloatValueConverter *converter;
 
@@ -24,20 +24,20 @@
 
 - (void)testConversionFromNumber; {
     id value = [self.converter convertValue:@0.5f];
-    STAssertTrue([value isKindOfClass:[NSValue class]], nil);
+    XCTAssertTrue([value isKindOfClass:[NSValue class]], @"");
 
     CGFloat floatValue = 0;
     [value getValue:&floatValue];
 
-    STAssertEquals(floatValue, 0.5f, nil);
+    XCTAssertEqual(floatValue, 0.5f, @"");
 }
 
 - (void)testGeneratedCodeFromString; {
-    STAssertEqualObjects([self.converter generateCodeForValue:@"1.123"], @"1.1230", nil);
+    XCTAssertEqual([self.converter generateCodeForValue:@"1.123"], @"1.1230", @"");
 }
 
 - (void)testGeneratedCodeFromNumber; {
-    STAssertEqualObjects([self.converter generateCodeForValue:[NSNumber numberWithFloat:1.123]], @"1.1230", nil);
+    XCTAssertEqual([self.converter generateCodeForValue:[NSNumber numberWithFloat:1.123]], @"1.1230", @"");
 }
 
 @end

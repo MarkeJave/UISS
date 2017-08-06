@@ -2,12 +2,12 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "UISSParser.h"
 #import "UISSPropertySetter.h"
 #import "UISSError.h"
 
-@interface UISSParserTests : SenTestCase
+@interface UISSParserTests : XCTestCase
 
 @property(nonatomic, strong) UISSParser *parser;
 
@@ -21,80 +21,80 @@
     NSDictionary *dictionary = @{@"UIToolbar" : @{@"tintColor" : @"yellow"}};
     dictionary = @{@"@Group" : dictionary};
 
-    NSMutableArray *errors = [NSMutableArray array];
+    NSArray *errors = [NSArray array];
 
-    NSArray *propertySetters = [self.parser parseDictionary:dictionary errors:errors];
+    NSArray *propertySetters = [self.parser parseDictionary:dictionary errors:&errors];
 
-    STAssertEquals(errors.count, (NSUInteger) 0, @"expected no errors");
-    STAssertEquals(propertySetters.count, (NSUInteger) 1, @"expected one property setter");
+    XCTAssertEqual(errors.count, 0, @"expected no errors");
+    XCTAssertEqual(propertySetters.count, (NSUInteger) 1, @"expected one property setter");
 
     UISSPropertySetter *propertySetter = [propertySetters lastObject];
-    STAssertEqualObjects(propertySetter.group, @"Group", nil);
-    STAssertEquals(propertySetter.containment.count, (NSUInteger) 0, nil);
+    XCTAssertEqual(propertySetter.group, @"Group", @"");
+    XCTAssertEqual(propertySetter.containment.count, (NSUInteger) 0, @"");
 }
 
 #pragma mark - Errors
 
 - (void)testInvalidAppearanceDictionary; {
     NSDictionary *dictionary = @{@"UIToolbar" : @"Invalid dictionary"};
-    NSMutableArray *errors = [NSMutableArray array];
+    NSArray *errors = [NSArray array];
 
-    [self.parser parseDictionary:dictionary errors:errors];
+    [self.parser parseDictionary:dictionary errors:&errors];
 
-    STAssertEquals(errors.count, (NSUInteger) 1, @"expected one error");
+    XCTAssertEqual(errors.count, (NSUInteger) 1, @"expected one error");
     NSError *error = errors.lastObject;
-    STAssertEquals(error.code, UISSInvalidAppearanceDictionaryError, nil);
-    STAssertEqualObjects((error.userInfo)[UISSInvalidAppearanceDictionaryErrorKey], dictionary, nil);
+    XCTAssertEqual(error.code, UISSInvalidAppearanceDictionaryError, @"");
+    XCTAssertEqual((error.userInfo)[UISSInvalidAppearanceDictionaryErrorKey], dictionary, @"");
 }
 
 - (void)testUnknownClassNameWithoutContainment; {
     NSDictionary *dictionary = @{@"UnknownClass" : @{@"tintColor" : @"yellow"}};
-    NSMutableArray *errors = [NSMutableArray array];
+    NSArray *errors = [NSArray array];
 
-    [self.parser parseDictionary:dictionary errors:errors];
+    [self.parser parseDictionary:dictionary errors:&errors];
 
-    STAssertEquals(errors.count, (NSUInteger) 1, @"expected one error");
+    XCTAssertEqual(errors.count, (NSUInteger) 1, @"expected one error");
     NSError *error = errors.lastObject;
-    STAssertEquals(error.code, UISSUnknownClassError, nil);
-    STAssertEqualObjects((error.userInfo)[UISSInvalidClassNameErrorKey], @"UnknownClass", nil);
+    XCTAssertEqual(error.code, UISSUnknownClassError, @"");
+    XCTAssertEqual((error.userInfo)[UISSInvalidClassNameErrorKey], @"UnknownClass", @"");
 }
 
 - (void)testInvalidAppearanceContainerClass; {
     NSDictionary *dictionary = @{@"UIToolbar" : @{@"tintColor" : @"yellow"}};
     dictionary = @{@"UIBarButtonItem" : dictionary};
-    NSMutableArray *errors = [NSMutableArray array];
+    NSArray *errors = [NSArray array];
 
-    [self.parser parseDictionary:dictionary errors:errors];
+    [self.parser parseDictionary:dictionary errors:&errors];
 
-    STAssertEquals(errors.count, (NSUInteger) 1, @"expected one error");
+    XCTAssertEqual(errors.count, (NSUInteger) 1, @"expected one error");
     NSError *error = errors.lastObject;
-    STAssertEquals(error.code, UISSInvalidAppearanceContainerClassError, nil);
-    STAssertEqualObjects((error.userInfo)[UISSInvalidClassNameErrorKey], @"UIBarButtonItem", nil);
+    XCTAssertEqual(error.code, UISSInvalidAppearanceContainerClassError, @"");
+    XCTAssertEqual((error.userInfo)[UISSInvalidClassNameErrorKey], @"UIBarButtonItem", @"");
 }
 
 - (void)testInvalidAppearanceClass; {
     NSDictionary *dictionary = @{@"NSString" : @{@"tintColor" : @"yellow"}};
-    NSMutableArray *errors = [NSMutableArray array];
+    NSArray *errors = [NSArray array];
 
-    [self.parser parseDictionary:dictionary errors:errors];
+    [self.parser parseDictionary:dictionary errors:&errors];
 
-    STAssertEquals(errors.count, (NSUInteger) 1, @"expected one error");
+    XCTAssertEqual(errors.count, (NSUInteger) 1, @"expected one error");
     NSError *error = errors.lastObject;
-    STAssertEquals(error.code, UISSInvalidAppearanceClassError, nil);
-    STAssertEqualObjects((error.userInfo)[UISSInvalidClassNameErrorKey], @"NSString", nil);
+    XCTAssertEqual(error.code, UISSInvalidAppearanceClassError, @"");
+    XCTAssertEqual((error.userInfo)[UISSInvalidClassNameErrorKey], @"NSString", @"");
 }
 
 - (void)testInvalidAppearanceClassInContainer; {
     NSDictionary *dictionary = @{@"UIBadToolbar" : @{@"tintColor" : @"yellow"}};
     dictionary = @{@"UIPopoverController" : dictionary};
-    NSMutableArray *errors = [NSMutableArray array];
+    NSArray *errors = [NSArray array];
 
-    [self.parser parseDictionary:dictionary errors:errors];
+    [self.parser parseDictionary:dictionary errors:&errors];
 
-    STAssertEquals(errors.count, (NSUInteger) 1, @"expected one error");
+    XCTAssertEqual(errors.count, (NSUInteger) 1, @"expected one error");
     NSError *error = errors.lastObject;
-    STAssertEquals(error.code, UISSUnknownClassError, nil);
-    STAssertEqualObjects((error.userInfo)[UISSInvalidClassNameErrorKey], @"UIBadToolbar", nil);
+    XCTAssertEqual(error.code, UISSUnknownClassError, @"");
+    XCTAssertEqual((error.userInfo)[UISSInvalidClassNameErrorKey], @"UIBadToolbar", @"");
 }
 
 #pragma mark - Invocations
@@ -103,12 +103,12 @@
     NSDictionary *dictionary = @{@"UIToolbar" : @{@"tintColor" : @"yellow"}};
 
     [self parserTestWithDictionary:dictionary assertionsAfterInvoke:^(NSInvocation *invocation) {
-        STAssertEqualObjects(invocation.target, [UIToolbar appearance], @"expected target to be UIToolbar appearance proxy");
-        STAssertEquals(invocation.selector, @selector(setTintColor:), nil);
+        XCTAssertEqual(invocation.target, [UIToolbar appearance], @"expected target to be UIToolbar appearance proxy");
+        XCTAssertEqual(invocation.selector, @selector(setTintColor:), @"");
 
         UIColor *color;
         [invocation getArgument:&color atIndex:2];
-        STAssertEqualObjects(color, [UIColor yellowColor], nil);
+        XCTAssertEqual(color, [UIColor yellowColor], @"");
     }];
 }
 
@@ -116,14 +116,14 @@
     NSDictionary *dictionary = @{@"UILabel" : @{@"shadowOffset" : @1.0f}};
 
     [self parserTestWithDictionary:dictionary assertionsAfterInvoke:^(NSInvocation *invocation) {
-        STAssertEqualObjects(invocation.target, [UILabel appearance], @"expected target to be UILabel appearance proxy");
-        STAssertEquals(invocation.selector, @selector(setShadowOffset:), nil);
+        XCTAssertEqual(invocation.target, [UILabel appearance], @"expected target to be UILabel appearance proxy");
+        XCTAssertEqual(invocation.selector, @selector(setShadowOffset:), @"");
 
         CGSize shadowOffset;
         [invocation getArgument:&shadowOffset atIndex:2];
-        STAssertEquals(shadowOffset, CGSizeMake(1, 1), nil);
-
-        STAssertEquals([[UILabel appearance] shadowOffset], CGSizeMake(1, 1), nil);
+        XCTAssertTrue(shadowOffset.width == 1 && shadowOffset.height == 1, @"");
+        
+        XCTAssertTrue([[UILabel appearance] shadowOffset].width == 1 && [[UILabel appearance] shadowOffset].height == 1, @"");
     }];
 }
 
@@ -132,7 +132,7 @@
 
 
     [self parserTestWithDictionary:dictionary assertionsAfterInvoke:^(NSInvocation *invocation) {
-        STAssertEqualObjects([[UIButton appearance] titleColorForState:UIControlStateHighlighted], [UIColor greenColor], nil);
+        XCTAssertEqual([[UIButton appearance] titleColorForState:UIControlStateHighlighted], [UIColor greenColor], @"");
     }];
 }
 
@@ -144,7 +144,7 @@
     [self parserTestWithDictionary:containmentDictionary assertionsAfterInvoke:^(NSInvocation *invocation) {
         UIColor *buttonColor = [[UIButton appearanceWhenContainedIn:[UINavigationController class],
                                                                     nil] titleColorForState:UIControlStateHighlighted];
-        STAssertEqualObjects(buttonColor, [UIColor greenColor], nil);
+        XCTAssertEqual(buttonColor, [UIColor greenColor], @"");
     }];
 }
 
@@ -156,7 +156,7 @@
     [self parserTestWithDictionary:dictionary assertionsAfterInvoke:^(NSInvocation *invocation) {
         UIColor *buttonColor = [[UIButton appearanceWhenContainedIn:[UIImageView class], [UINavigationController class],
                                                                     nil] titleColorForState:UIControlStateHighlighted];
-        STAssertEqualObjects(buttonColor, [UIColor yellowColor], nil);
+        XCTAssertEqual(buttonColor, [UIColor yellowColor], @"");
     }];
 }
 
@@ -177,7 +177,7 @@
         }
     }
 
-    STAssertTrue([invokedInvocations count], @"expected at least one invocation");
+    XCTAssertTrue([invokedInvocations count], @"expected at least one invocation");
 }
 
 #pragma mark - Setup

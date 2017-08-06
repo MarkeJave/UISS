@@ -2,10 +2,10 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "UISSUserInterfaceIdiomPreprocessor.h"
 
-@interface UISSUserInterfaceIdiomPreprocessorTests : SenTestCase
+@interface UISSUserInterfaceIdiomPreprocessorTests : XCTestCase
 
 @property(nonatomic, strong) UISSUserInterfaceIdiomPreprocessor *preprocessor;
 
@@ -19,8 +19,8 @@
 
     NSDictionary *preprocessed = [self.preprocessor preprocess:dictionary userInterfaceIdiom:UIUserInterfaceIdiomPhone];
 
-    STAssertNotNil(preprocessed, nil);
-    STAssertEqualObjects(dictionary, preprocessed, nil);
+    XCTAssertNotNil(preprocessed, @"");
+    XCTAssertEqual(dictionary, preprocessed, @"");
 }
 
 - (void)testDictionaryWithPhoneBranchOnDeviceWithPadIdiom; {
@@ -29,9 +29,9 @@
 
     NSDictionary *preprocessed = [self.preprocessor preprocess:dictionary userInterfaceIdiom:UIUserInterfaceIdiomPad];
 
-    STAssertNotNil(preprocessed, nil);
-    STAssertEquals(preprocessed.count, (NSUInteger) 1, @"only one object could survive");
-    STAssertEquals(preprocessed[@"k1"], @"v1", nil);
+    XCTAssertNotNil(preprocessed, @"");
+    XCTAssertEqual(preprocessed.count, (NSUInteger) 1, @"only one object could survive");
+    XCTAssertEqual(preprocessed[@"k1"], @"v1", @"");
 }
 
 - (void)testDictionaryWithPhoneAndPadBranchOnDeviceWithPhoneIdiom; {
@@ -40,9 +40,9 @@
 
     NSDictionary *preprocessed = [self.preprocessor preprocess:dictionary userInterfaceIdiom:UIUserInterfaceIdiomPhone];
 
-    STAssertNotNil(preprocessed, nil);
-    STAssertEquals(preprocessed.count, (NSUInteger) 1, @"only one object could survive");
-    STAssertEqualObjects(preprocessed[@"phone-key"], @"phone-value", nil);
+    XCTAssertNotNil(preprocessed, @"");
+    XCTAssertEqual(preprocessed.count, (NSUInteger) 1, @"only one object could survive");
+    XCTAssertEqual(preprocessed[@"phone-key"], @"phone-value", @"");
 }
 
 - (void)testDictionaryWithNestedPhoneBranchOnPhoneIdiom; {
@@ -50,8 +50,8 @@
     NSDictionary *dictionary = @{@"root" : nestedDictionary};
 
     NSDictionary *preprocessed = [self.preprocessor preprocess:dictionary userInterfaceIdiom:UIUserInterfaceIdiomPhone];
-    STAssertTrue([preprocessed.allKeys containsObject:@"root"], nil);
-    STAssertEqualObjects(preprocessed[@"root"][@"key"], @"value", nil);
+    XCTAssertTrue([preprocessed.allKeys containsObject:@"root"], @"");
+    XCTAssertEqual(preprocessed[@"root"][@"key"], @"value", @"");
 }
 
 - (void)testPreprocessorShouldIgnoreLetterCase; {
@@ -60,9 +60,9 @@
 
     NSDictionary *preprocessed = [self.preprocessor preprocess:dictionary userInterfaceIdiom:UIUserInterfaceIdiomPhone];
 
-    STAssertNotNil(preprocessed, nil);
-    STAssertEquals(preprocessed.count, (NSUInteger) 1, @"only one object could survive");
-    STAssertEqualObjects(preprocessed[@"phone-key"], @"phone-value", nil);
+    XCTAssertNotNil(preprocessed, @"");
+    XCTAssertEqual(preprocessed.count, (NSUInteger) 1, @"only one object could survive");
+    XCTAssertEqual(preprocessed[@"phone-key"], @"phone-value", @"");
 }
 
 - (void)setUp; {

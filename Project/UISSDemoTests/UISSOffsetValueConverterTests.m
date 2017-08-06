@@ -2,10 +2,10 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "UISSOffsetValueConverter.h"
 
-@interface UISSOffsetValueConverterTests : SenTestCase
+@interface UISSOffsetValueConverterTests : XCTestCase
 
 @property(nonatomic, strong) UISSOffsetValueConverter *converter;
 
@@ -35,10 +35,10 @@
 
 - (void)testValue:(id)value expectedOffset:(UIOffset)expectedOffset expectedCode:(NSString *)expectedCode; {
     id converted = [self.converter convertValue:value];
-    STAssertEquals([converted UIOffsetValue], expectedOffset, nil);
+    XCTAssertEqual(converted, [NSValue valueWithUIOffset:expectedOffset], @"");
 
     NSString *code = [self.converter generateCodeForValue:value];
-    STAssertEqualObjects(code, expectedCode, nil);
+    XCTAssertEqual(code, expectedCode, @"");
 }
 
 @end

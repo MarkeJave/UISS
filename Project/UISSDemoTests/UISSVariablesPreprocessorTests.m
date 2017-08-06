@@ -2,10 +2,10 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "UISSVariablesPreprocessor.h"
 
-@interface UISSVariablesPreprocessorTests : SenTestCase
+@interface UISSVariablesPreprocessorTests : XCTestCase
 
 @property(nonatomic, strong) UISSVariablesPreprocessor *preprocessor;
 
@@ -15,7 +15,7 @@
 
 - (void)testSubstitutionWithRegularValue; {
     id value = @"test";
-    STAssertEquals([self.preprocessor substituteValue:value], value, nil);
+    XCTAssertEqual([self.preprocessor substituteValue:value], value, @"");
 }
 
 - (void)testSettingVariable; {
@@ -24,7 +24,7 @@
 
     [self.preprocessor setVariableValue:value forName:name];
 
-    STAssertEqualObjects(value, [self.preprocessor getValueForVariableWithName:name], nil);
+    XCTAssertEqual(value, [self.preprocessor getValueForVariableWithName:name], @"");
 }
 
 - (void)testSubstitutionOfAddedVariable; {
@@ -33,7 +33,7 @@
 
     [self.preprocessor setVariableValue:value forName:name];
 
-    STAssertEquals(value, [self.preprocessor substituteValue:@"$test"], nil);
+    XCTAssertEqual(value, [self.preprocessor substituteValue:@"$test"], @"");
 }
 
 - (void)testNestedVariables; {
@@ -46,7 +46,7 @@
     [self.preprocessor setVariableValue:v1 forName:name1];
     [self.preprocessor setVariableValue:v2 forName:name2];
 
-    STAssertEqualObjects(v1, [self.preprocessor getValueForVariableWithName:name2][@"test"], nil);
+    XCTAssertEqual(v1, [self.preprocessor getValueForVariableWithName:name2][@"test"], @"");
 }
 
 - (void)testNestedUnknownVariableShouldBeResolvedAsNull; {
@@ -54,7 +54,7 @@
     id value = @"$unknown";
 
     [self.preprocessor setVariableValue:value forName:name];
-    STAssertEqualObjects([self.preprocessor getValueForVariableWithName:name], [NSNull null], nil);
+    XCTAssertEqual([self.preprocessor getValueForVariableWithName:name], [NSNull null], @"");
 }
 
 - (void)testNestedVariableCycle; {
@@ -62,14 +62,14 @@
     id value = @"$v";
 
     [self.preprocessor setVariableValue:value forName:name];
-    STAssertEqualObjects([self.preprocessor getValueForVariableWithName:name], [NSNull null], nil);
+    XCTAssertEqual([self.preprocessor getValueForVariableWithName:name], [NSNull null], @"");
 }
 
 - (void)testAddingVariablesFromDictionary; {
     NSDictionary *dictionary = @{@"v1" : @"value1"};
 
     [self.preprocessor setVariablesFromDictionary:dictionary];
-    STAssertEqualObjects([self.preprocessor getValueForVariableWithName:@"v1"], @"value1", nil);
+    XCTAssertEqual([self.preprocessor getValueForVariableWithName:@"v1"], @"value1", @"");
 }
 
 - (void)testAddingVariablesFromDictionaryWithNestedVariables; {
@@ -78,7 +78,7 @@
 
     [self.preprocessor setVariablesFromDictionary:dictionary];
 
-    STAssertEqualObjects([self.preprocessor getValueForVariableWithName:@"v2"], @"value1", nil);
+    XCTAssertEqual([self.preprocessor getValueForVariableWithName:@"v2"], @"value1", @"");
 }
 
 - (void)testAddingVariablesFromDictionaryWithNestedVariablesCycle; {
@@ -87,8 +87,8 @@
 
     [self.preprocessor setVariablesFromDictionary:dictionary];
 
-    STAssertEqualObjects([self.preprocessor getValueForVariableWithName:@"v1"], [NSNull null], nil);
-    STAssertEqualObjects([self.preprocessor getValueForVariableWithName:@"v2"], [NSNull null], nil);
+    XCTAssertEqual([self.preprocessor getValueForVariableWithName:@"v1"], [NSNull null], @"");
+    XCTAssertEqual([self.preprocessor getValueForVariableWithName:@"v2"], [NSNull null], @"");
 }
 
 - (void)testAddingVariablesFromDictionaryWithNestedVariablesCycleAndPredefiniedValue; {
@@ -101,8 +101,8 @@
     [self.preprocessor setVariableValue:value forName:@"v2"];
     [self.preprocessor setVariablesFromDictionary:dictionary];
 
-    STAssertEqualObjects([self.preprocessor getValueForVariableWithName:@"v1"], value, nil);
-    STAssertEqualObjects([self.preprocessor getValueForVariableWithName:@"v2"], value, nil);
+    XCTAssertEqual([self.preprocessor getValueForVariableWithName:@"v1"], value, @"");
+    XCTAssertEqual([self.preprocessor getValueForVariableWithName:@"v2"], value, @"");
 }
 
 - (void)testPreprocessingDictionary; {
@@ -117,10 +117,10 @@
 
     NSDictionary *preprocessed = [self.preprocessor preprocess:dictionary userInterfaceIdiom:UIUserInterfaceIdiomPhone];
 
-    STAssertFalse([preprocessed.allKeys containsObject:@"Variables"], @"Variables dictionary should be removed");
+    XCTAssertFalse([preprocessed.allKeys containsObject:@"Variables"], @"Variables dictionary should be removed");
 
-    STAssertEqualObjects(preprocessed[@"Component"][@"property1"], @"v1-value", nil);
-    STAssertEqualObjects(preprocessed[@"Component"][@"property2"], @"v2-value", nil);
+    XCTAssertEqual(preprocessed[@"Component"][@"property1"], @"v1-value", @"");
+    XCTAssertEqual(preprocessed[@"Component"][@"property2"], @"v2-value", @"");
 }
 
 - (void)setUp; {

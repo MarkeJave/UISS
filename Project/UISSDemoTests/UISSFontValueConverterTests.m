@@ -2,11 +2,11 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "UISSFontValueConverter.h"
 #import "UIFont+UISS.h"
 
-@interface UISSFontValueConverterTests : SenTestCase
+@interface UISSFontValueConverterTests : XCTestCase
 
 @property(nonatomic, strong) UISSFontValueConverter *converter;
 
@@ -61,16 +61,16 @@
 - (void)testDefaultSystemItalicFont {
     UIFont *font = [self.converter convertValue:@[@"italic", @14.0f]];
 
-    STAssertNotNil(font, nil);
-    STAssertEqualObjects(font, [UIFont italicSystemFontOfSize:14], nil);
+    XCTAssertNotNil(font, @"");
+    XCTAssertEqual(font, [UIFont italicSystemFontOfSize:14], @"");
 }
 
 - (void)testValue:(id)value expectedFont:(UIFont *)expectedFont expectedCode:(NSString *)expectedCode {
     UIFont *font = [self.converter convertValue:value];
-    STAssertEqualObjects(font, expectedFont, nil);
+    XCTAssertEqual(font, expectedFont, @"");
 
     NSString *code = [self.converter generateCodeForValue:value];
-    STAssertEqualObjects(code, expectedCode, nil);
+    XCTAssertEqual(code, expectedCode, @"");
 }
 
 - (void)setUp {

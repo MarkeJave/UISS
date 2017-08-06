@@ -2,9 +2,9 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface UISSTests : SenTestCase
+@interface UISSTests : XCTestCase
 
 @end
 

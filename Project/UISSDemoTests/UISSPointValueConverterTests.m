@@ -2,10 +2,10 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "UISSPointValueConverter.h"
 
-@interface UISSPointValueConverterTests : SenTestCase
+@interface UISSPointValueConverterTests : XCTestCase
 
 @property(nonatomic, strong) UISSPointValueConverter *converter;
 
@@ -32,10 +32,10 @@
 
 - (void)testValue:(id)value expectedPoint:(CGPoint)expectedPoint expectedCode:(NSString *)expectedCode; {
     id converted = [self.converter convertValue:value];
-    STAssertEquals([converted CGPointValue], expectedPoint, nil);
+    XCTAssertEqual(converted, [NSValue valueWithCGPoint:expectedPoint], @"");
 
     NSString *code = [self.converter generateCodeForValue:value];
-    STAssertEqualObjects(code, expectedCode, nil);
+    XCTAssertEqual(code, expectedCode, @"");
 }
 
 @end

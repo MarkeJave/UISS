@@ -2,10 +2,10 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "UISSImageValueConverter.h"
 
-@interface UISSImageValueConverterTests : SenTestCase
+@interface UISSImageValueConverterTests : XCTestCase
 
 @property(nonatomic, strong) UISSImageValueConverter *converter;
 
@@ -15,20 +15,20 @@
 
 - (void)testNullImage; {
     UIImage *image = [self.converter convertValue:[NSNull null]];
-    STAssertNil(image, nil);
+    XCTAssertNil(image, @"");
 
     NSString *code = [self.converter generateCodeForValue:[NSNull null]];
-    STAssertEqualObjects(code, @"nil", nil);
+    XCTAssertEqual(code, @"nil", @"");
 }
 
 - (void)testSimleImageAsString; {
     UIImage *image = [self.converter convertValue:@"background"];
 
-    STAssertNotNil(image, nil);
-    STAssertEqualObjects(image, [UIImage imageNamed:@"background"], nil);
+    XCTAssertNotNil(image, @"");
+    XCTAssertEqual(image, [UIImage imageNamed:@"background"], @"");
 
     NSString *code = [self.converter generateCodeForValue:@"background"];
-    STAssertEqualObjects(code, @"[UIImage imageNamed:@\"background\"]", nil);
+    XCTAssertEqual(code, @"[UIImage imageNamed:@\"background\"]", @"");
 }
 
 - (void)testResizableWithEdgeInsetsDefinedInSubarray; {
@@ -36,18 +36,18 @@
 
     UIImage *image = [self.converter convertValue:value];
 
-    STAssertNotNil(image, nil);
-    STAssertEquals(image.capInsets, UIEdgeInsetsMake(1, 2, 3, 4), nil);
+    XCTAssertNotNil(image, @"");
+    XCTAssertEqual([NSValue valueWithUIEdgeInsets:image.capInsets], [NSValue valueWithUIEdgeInsets:UIEdgeInsetsMake(1, 2, 3, 4)], @"");
 
     NSString *code = [self.converter generateCodeForValue:value];
-    STAssertEqualObjects(code, @"[[UIImage imageNamed:@\"background\"] resizableImageWithCapInsets:UIEdgeInsetsMake(1.0, 2.0, 3.0, 4.0)]", nil);
+    XCTAssertEqual(code, @"[[UIImage imageNamed:@\"background\"] resizableImageWithCapInsets:UIEdgeInsetsMake(1.0, 2.0, 3.0, 4.0)]", @"");
 }
 
 - (void)testResizableDefinedInOneArray; {
     UIImage *image = [self.converter convertValue:@[@"background", @1.0f, @2.0f, @3.0f, @4.0f]];
 
-    STAssertNotNil(image, nil);
-    STAssertEquals(image.capInsets, UIEdgeInsetsMake(1, 2, 3, 4), nil);
+    XCTAssertNotNil(image, @"");
+    XCTAssertEqual([NSValue valueWithUIEdgeInsets:image.capInsets], [NSValue valueWithUIEdgeInsets:UIEdgeInsetsMake(1, 2, 3, 4)], @"");
 }
 
 - (void)setUp; {

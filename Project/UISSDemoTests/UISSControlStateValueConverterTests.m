@@ -2,10 +2,10 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "UISSControlStateValueConverter.h"
 
-@interface UISSControlStateValueConverterTests : SenTestCase
+@interface UISSControlStateValueConverterTests : XCTestCase
 
 @property(nonatomic, strong) UISSControlStateValueConverter *converter;
 
@@ -22,53 +22,53 @@
 }
 
 - (void)testControlStateNormal {
-    STAssertEquals([[self.converter convertValue:@"normal"] unsignedIntegerValue], (UIControlState) UIControlStateNormal, nil);
-    STAssertEqualObjects([self.converter generateCodeForValue:@"normal"], @"UIControlStateNormal", nil);
+    XCTAssertEqual([[self.converter convertValue:@"normal"] unsignedIntegerValue], (UIControlState) UIControlStateNormal, @"");
+    XCTAssertEqual([self.converter generateCodeForValue:@"normal"], @"UIControlStateNormal", @"");
 }
 
 - (void)testControlStateHighlighted {
-    STAssertEquals([[self.converter convertValue:@"highlighted"] unsignedIntegerValue], (UIControlState) UIControlStateHighlighted, nil);
-    STAssertEqualObjects([self.converter generateCodeForValue:@"highlighted"], @"UIControlStateHighlighted", nil);
+    XCTAssertEqual([[self.converter convertValue:@"highlighted"] unsignedIntegerValue], (UIControlState) UIControlStateHighlighted, @"");
+    XCTAssertEqual([self.converter generateCodeForValue:@"highlighted"], @"UIControlStateHighlighted", @"");
 }
 
 - (void)testControlStateDisabled {
-    STAssertEquals([[self.converter convertValue:@"disabled"] unsignedIntegerValue], (UIControlState) UIControlStateDisabled, nil);
-    STAssertEqualObjects([self.converter generateCodeForValue:@"disabled"], @"UIControlStateDisabled", nil);
+    XCTAssertEqual([[self.converter convertValue:@"disabled"] unsignedIntegerValue], (UIControlState) UIControlStateDisabled, @"");
+    XCTAssertEqual([self.converter generateCodeForValue:@"disabled"], @"UIControlStateDisabled", @"");
 }
 
 - (void)testControlStateSelected {
-    STAssertEquals([[self.converter convertValue:@"selected"] unsignedIntegerValue], (UIControlState) UIControlStateSelected, nil);
-    STAssertEqualObjects([self.converter generateCodeForValue:@"selected"], @"UIControlStateSelected", nil);
+    XCTAssertEqual([[self.converter convertValue:@"selected"] unsignedIntegerValue], (UIControlState) UIControlStateSelected, @"");
+    XCTAssertEqual([self.converter generateCodeForValue:@"selected"], @"UIControlStateSelected", @"");
 }
 
 - (void)testControlStateApplication {
-    STAssertEquals([[self.converter convertValue:@"application"] unsignedIntegerValue], (UIControlState) UIControlStateApplication, nil);
-    STAssertEqualObjects([self.converter generateCodeForValue:@"application"], @"UIControlStateApplication", nil);
+    XCTAssertEqual([[self.converter convertValue:@"application"] unsignedIntegerValue], (UIControlState) UIControlStateApplication, @"");
+    XCTAssertEqual([self.converter generateCodeForValue:@"application"], @"UIControlStateApplication", @"");
 }
 
 - (void)testControlStateReserved {
-    STAssertEquals([[self.converter convertValue:@"reserved"] unsignedIntegerValue], (UIControlState) UIControlStateReserved, nil);
-    STAssertEqualObjects([self.converter generateCodeForValue:@"reserved"], @"UIControlStateReserved", nil);
+    XCTAssertEqual([[self.converter convertValue:@"reserved"] unsignedIntegerValue], (UIControlState) UIControlStateReserved, @"");
+    XCTAssertEqual([self.converter generateCodeForValue:@"reserved"], @"UIControlStateReserved", @"");
 }
 
 - (void)testInvalidValue {
-    STAssertNil([self.converter convertValue:@"dummy"], nil);
-    STAssertNil([self.converter generateCodeForValue:@"dummy"], nil);
+    XCTAssertNil([self.converter convertValue:@"dummy"], @"");
+    XCTAssertNil([self.converter generateCodeForValue:@"dummy"], @"");
 }
 
 - (void)testControlStateSelectedAndHighlighted {
-    STAssertEquals([[self.converter convertValue:@"selected|highlighted"] unsignedIntegerValue], (UIControlState) (UIControlStateSelected | UIControlStateHighlighted), nil);
-    STAssertEqualObjects([self.converter generateCodeForValue:@"selected|highlighted"], @"UIControlStateSelected|UIControlStateHighlighted", nil);
+    XCTAssertEqual([[self.converter convertValue:@"selected|highlighted"] unsignedIntegerValue], (UIControlState) (UIControlStateSelected | UIControlStateHighlighted), @"");
+    XCTAssertEqual([self.converter generateCodeForValue:@"selected|highlighted"], @"UIControlStateSelected|UIControlStateHighlighted", @"");
 }
 
 - (void)testControlStateNormalAndHighlighted {
-    STAssertEquals([[self.converter convertValue:@"normal|highlighted"] unsignedIntegerValue], (UIControlState) (UIControlStateNormal | UIControlStateHighlighted), nil);
-    STAssertEqualObjects([self.converter generateCodeForValue:@"normal|highlighted"], @"UIControlStateNormal|UIControlStateHighlighted", nil);
+    XCTAssertEqual([[self.converter convertValue:@"normal|highlighted"] unsignedIntegerValue], (UIControlState) (UIControlStateNormal | UIControlStateHighlighted), @"");
+    XCTAssertEqual([self.converter generateCodeForValue:@"normal|highlighted"], @"UIControlStateNormal|UIControlStateHighlighted", @"");
 }
 
 - (void)testControlStateDisabledAndSelected {
-    STAssertEquals([[self.converter convertValue:@"disabled|selected"] unsignedIntegerValue], (UIControlState) (UIControlStateDisabled | UIControlStateSelected), nil);
-    STAssertEqualObjects([self.converter generateCodeForValue:@"disabled|selected"], @"UIControlStateDisabled|UIControlStateSelected", nil);
+    XCTAssertEqual([[self.converter convertValue:@"disabled|selected"] unsignedIntegerValue], (UIControlState) (UIControlStateDisabled | UIControlStateSelected), @"");
+    XCTAssertEqual([self.converter generateCodeForValue:@"disabled|selected"], @"UIControlStateDisabled|UIControlStateSelected", @"");
 }
 
 @end

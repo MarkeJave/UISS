@@ -2,10 +2,10 @@
 // Copyright (c) 2013 Robert Wijas. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "UISSRectValueConverter.h"
 
-@interface UISSRectValueConverterTests : SenTestCase
+@interface UISSRectValueConverterTests : XCTestCase
 
 @property(nonatomic, strong) UISSRectValueConverter *converter;
 
@@ -27,10 +27,10 @@
             @3.0f,
             @4.0f];
     id converted = [self.converter convertValue:value];
-    STAssertEquals([converted CGRectValue], CGRectMake(1, 2, 3, 4), nil);
+    XCTAssertEqual(converted, [NSValue valueWithCGRect:CGRectMake(1, 2, 3, 4)], @"");
 
     NSString *code = [self.converter generateCodeForValue:value];
-    STAssertEqualObjects(code, @"CGRectMake(1.0, 2.0, 3.0, 4.0)", nil);
+    XCTAssertEqual(code, @"CGRectMake(1.0, 2.0, 3.0, 4.0)", @"");
 }
 
 @end
