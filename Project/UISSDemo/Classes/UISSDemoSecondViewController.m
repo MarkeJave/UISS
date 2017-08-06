@@ -21,7 +21,7 @@
     static BOOL random = YES;
     UISS *uiss = [(UISSDemoAppDelegate *)[[UIApplication sharedApplication] delegate] uiss];
     
-    [uiss reloadWithURL:[[NSBundle mainBundle] URLForResource:random ? @"uiss2" : @"uiss" withExtension:@"json"]];
+    [uiss applyURL:[[NSBundle mainBundle] URLForResource:random ? @"uiss2" : @"uiss" withExtension:@"json"]];
     
     random = (random + 1) % 2;
 }

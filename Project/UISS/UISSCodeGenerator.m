@@ -8,20 +8,20 @@
 
 @implementation UISSCodeGenerator
 
-- (NSString *)generateCodeForPropertySetters:(NSArray *)propertySetters errors:(NSMutableArray *)errors;
+- (NSString *)generateCodeForPropertySetters:(NSArray *)propertySetters errors:(NSArray **)errors;
 {
     NSMutableString *code = [NSMutableString string];
     NSMutableDictionary *groups = [NSMutableDictionary dictionary];
     
     for (UISSPropertySetter *propertySetter in propertySetters) {
-        NSString *generatedCode = propertySetter.generatedCode;
+        NSString *generatedCode = [propertySetter generatedCode];
         
         if (generatedCode) {
-            if (propertySetter.group) {
-                NSMutableString *groupCode = [groups objectForKey:propertySetter.group];
+            if ([propertySetter group]) {
+                NSMutableString *groupCode = [groups objectForKey:[propertySetter group]];
                 if (groupCode == nil) {
-                    groupCode = [NSMutableString stringWithFormat:@"// %@\n", propertySetter.group];
-                    [groups setObject:groupCode forKey:propertySetter.group];
+                    groupCode = [NSMutableString stringWithFormat:@"// %@\n", [propertySetter group]];
+                    [groups setObject:groupCode forKey:[propertySetter group]];
                 }
                 
                 [groupCode appendFormat:@"%@\n", generatedCode];
@@ -29,13 +29,11 @@
                 [code appendFormat:@"%@\n", generatedCode];
             }
         } else {
-            [errors addObject:[UISSError errorWithCode:UISSPropertySetterGenerateCodeError 
-                                              userInfo:[NSDictionary dictionaryWithObject:propertySetter
-                                                                                   forKey:UISSPropertySetterErrorKey]]];
+            *errors = @[[UISSError errorWithCode:UISSPropertySetterGenerateCodeError userInfo:[NSDictionary dictionaryWithObject:propertySetter forKey:UISSPropertySetterErrorKey]]];
         }
     }
     
-    for (NSString *groupCode in groups.allValues) {
+    for (NSString *groupCode in [groups allValues]) {
         [code appendString:groupCode];
     }
 

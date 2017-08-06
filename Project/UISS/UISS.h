@@ -19,6 +19,8 @@ extern NSString *const UISSDidRefreshViewsNotification;
 
 @property(nonatomic, assign, readonly) NSTimeInterval delayTimeInterval;
 
+@property(nonatomic, copy, readonly) NSArray *errors;
+
 @property(nonatomic, assign) BOOL debugEnabled;
 
 - (UISS *)initWithURL:(NSURL *)URL config:(UISSConfig *)config;
@@ -27,10 +29,10 @@ extern NSString *const UISSDidRefreshViewsNotification;
 + (UISS *)defaultUISS;
 + (UISS *)defaultUISSWithURL:(NSURL *)URL;
 
-- (void)load;
-- (void)reload; // Asynchronously
-- (void)reloadWithURL:(NSURL *)URL; // Asynchronously
-- (void)reloadWithURL:(NSURL *)URL delay:(NSTimeInterval)delay;
+- (void)apply;
+- (void)applyAsynchronously;
+- (void)applyURL:(NSURL *)URL; // Asynchronously
+- (void)applyURL:(NSURL *)URL delay:(NSTimeInterval)delay;
 
 // code handler is called on main thread
 - (void)generateCodeForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom

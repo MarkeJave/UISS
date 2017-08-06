@@ -6,6 +6,6 @@
 
 @interface UISSCodeGenerator : NSObject
 
-- (NSString *)generateCodeForPropertySetters:(NSArray *)propertySetters errors:(NSMutableArray *)errors;
+- (NSString *)generateCodeForPropertySetters:(NSArray *)propertySetters errors:(NSArray **)errors;
 
 @end

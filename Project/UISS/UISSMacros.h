@@ -23,4 +23,7 @@
 #define UISS_LOG(...)
 #endif
 
+#define UISSErrorsAdd(errorsPtr, error)  if (*errorsPtr) { if (error) { [*errorsPtr arrayByAddingObject:error]; }} else { *errorsPtr = @[error]; }
+#define UISSErrorsAdds(errorsPtr, errors)  if (*errorsPtr) { if (errors) { [*errorsPtr arrayByAddingObjectsFromArray:errors]; }} else { *errorsPtr = [errors copy]; }
+
 #endif

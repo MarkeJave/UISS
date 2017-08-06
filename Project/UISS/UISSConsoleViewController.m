@@ -47,7 +47,7 @@
         self.viewControllers = [NSArray arrayWithObjects:errorsNavigationController, configNavigationController,
                                                          generatedCodeNavigationController, nil];
 
-        if (self.uiss.style.errors.count) {
+        if (self.uiss.errors.count) {
             self.selectedViewController = errorsNavigationController;
         } else {
             self.selectedViewController = configNavigationController;
@@ -76,7 +76,7 @@
 }
 
 - (void)updateErrors {
-    self.errorsViewController.errors = self.uiss.style.errors;
+    self.errorsViewController.errors = self.uiss.errors;
 }
 
 - (UIBarButtonItem *)createCloseBarButton {

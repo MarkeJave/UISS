@@ -15,13 +15,16 @@ NSString *const UISSStyleDidParseDictionaryNotification = @"UISSStyleDidParseDic
 
 @interface UISSStyle ()
 
-@property (nonatomic, strong) NSURL *URL;
-@property (nonatomic, strong) NSData *data;
+@property (nonatomic, copy) NSURL *URL;
+@property (nonatomic, copy) NSData *data;
 
-@property (nonatomic, strong) NSArray *propertySettersPad;
-@property (nonatomic, strong) NSArray *propertySettersPhone;
+@property (nonatomic, assign) BOOL downloadCompleted;
+@property (nonatomic, assign) BOOL parseCompleted;
 
-@property (nonatomic, strong) NSMutableArray *errors;
+@property (nonatomic, copy) NSDictionary *dictionary;
+
+@property (nonatomic, copy) NSArray *propertySettersPad;
+@property (nonatomic, copy) NSArray *propertySettersPhone;
 
 @end
 
@@ -32,8 +35,9 @@ NSString *const UISSStyleDidParseDictionaryNotification = @"UISSStyleDidParseDic
 }
 
 - (instancetype)initWithURL:(NSURL *)URL;{
+    NSParameterAssert(URL);
+    
     if (self = [super init]) {
-        self.errors = [NSMutableArray array];
         self.URL = URL;
     }
     return self;
@@ -44,53 +48,20 @@ NSString *const UISSStyleDidParseDictionaryNotification = @"UISSStyleDidParseDic
 }
 
 - (instancetype)initWithData:(NSData *)data;{
+    NSParameterAssert(data);
+    
     if (self = [super init]) {
-        self.errors = [NSMutableArray array];
         self.data = data;
     }
     return self;
 }
 
-- (id)init {
-    self = [super init];
-    if (self) {
-        
-    }
-    return self;
-}
-
-- (void)setURL:(NSURL *)URL {
-    if (_URL != URL) {
-        _URL = URL;
-
-        self.data = nil;
-    }
-}
-
-- (void)setData:(NSData *)data {
-    if (_data != data) {
-        _data = data;
-
-        self.dictionary = nil;
-        [self.errors removeAllObjects];
-    }
-}
-
-- (void)setDictionary:(NSDictionary *)dictionary {
-    if (_dictionary != dictionary) {
-        _dictionary = dictionary;
-
-        self.propertySettersPad = nil;
-        self.propertySettersPhone = nil;
-    }
-}
-
 - (NSArray *)propertySettersForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom {
     switch (userInterfaceIdiom) {
         case UIUserInterfaceIdiomPad:
-            return self.propertySettersPad;
+            return [self propertySettersPad];
         default: // UIUserInterfaceIdiomPhone
-            return self.propertySettersPhone;
+            return [self propertySettersPhone];
     }
 }
 
@@ -107,89 +78,75 @@ NSString *const UISSStyleDidParseDictionaryNotification = @"UISSStyleDidParseDic
 
 #pragma mark - Parsing
 
-- (BOOL)downloadData {
+- (BOOL)downloadDataWithError:(NSError **)error {
+    if ([self downloadCompleted] || (![self URL] && [self data])) return YES;
+    
     [self postNotificationName:UISSStyleWillDownloadNotification];
 
-    BOOL downloadedNewStyle = NO;
-
-    NSError *error;
-    NSData *data = [NSData dataWithContentsOfURL:self.URL
+    NSData *data = [NSData dataWithContentsOfURL:[self URL]
                                          options:(NSDataReadingOptions) 0
-                                           error:&error];
+                                           error:error];
 
-    if (error) {
-        [self.errors addObject:error];
-    } else {
-        if (data && [data isEqualToData:self.data] == NO) {
-            self.data = data;
-            downloadedNewStyle = YES;
-        }
+    if (!*error && data) {
+        self.data = data;
+        self.downloadCompleted = YES;
     }
 
     [self postNotificationName:UISSStyleDidDownloadNotification];
 
-    return downloadedNewStyle;
+    return [self downloadCompleted];
 }
 
-- (BOOL)parseData {
-    if (self.data == nil) {
-        if ([self downloadData] == NO) {
-            return NO;
-        }
-    }
+- (BOOL)parseDataWithError:(NSError **)error {
+    if (![self data]) return NO;
+    if ([self parseCompleted]) return YES;
 
     [self postNotificationName:UISSStyleWillParseDataNotification];
 
-    BOOL dataParsed = NO;
-
-    NSError *error;
-    NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:self.data
+    NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:[self data]
                                                                options:NSJSONReadingMutableContainers
-                                                                 error:&error];
+                                                                 error:error];
 
-    if (error) {
-        [self.errors addObject:error];
-    } else {
+    if (!*error) {
         self.dictionary = dictionary;
-        dataParsed = YES;
+        self.parseCompleted = YES;
     }
 
     [self postNotificationName:UISSStyleDidParseDataNotification];
 
-    return dataParsed;
+    return [self parseCompleted];
 }
 
-- (BOOL)parseDictionaryForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom withConfig:(UISSConfig *)config {
+- (NSArray *)parseForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom withConfig:(UISSConfig *)config errors:(NSArray **)errors; {
     NSArray *propertySetters = [self propertySettersForUserInterfaceIdiom:userInterfaceIdiom];
-
-    if (propertySetters) {
-        return NO;
-    }
-
-    if (self.dictionary == nil) {
-        if ([self parseData] == NO) {
-            return NO;
+    if (propertySetters) return propertySetters;
+    
+    if (![self dictionary]) {
+        NSError *downloadError = nil;
+        if (![self downloadDataWithError:&downloadError] && downloadError) {
+            UISSErrorsAdd(errors, downloadError);
+        }
+        
+        NSError *parseError = nil;
+        if (![self parseDataWithError:&parseError] && parseError) {
+            UISSErrorsAdd(errors, parseError);
         }
     }
+    
+    if (![self dictionary]) return nil;
 
     [self postNotificationName:UISSStyleWillParseDictionaryNotification];
 
-    BOOL dictionaryParsed = NO;
-
-    UISSParser *parser = [[UISSParser alloc] init];
-    parser.userInterfaceIdiom = userInterfaceIdiom;
-    parser.config = config;
-
-    propertySetters = [parser parseDictionary:self.dictionary errors:self.errors];
-
+    UISSParser *parser = [UISSParser parserWithConfig:config userInterfaceIdiom:userInterfaceIdiom];
+    
+    propertySetters = [parser parseDictionary:[self dictionary] errors:errors];
     if (propertySetters) {
         [self setPropertySetters:propertySetters forUserInterfaceIdiom:userInterfaceIdiom];
-        dictionaryParsed = YES;
     }
 
     [self postNotificationName:UISSStyleDidParseDictionaryNotification];
 
-    return dictionaryParsed;
+    return propertySetters;
 }
 
 #pragma mark - Notifications on Main Thread

@@ -40,6 +40,8 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
 
 @property(nonatomic, strong) UISSStyle *style;
 
+@property(nonatomic, copy) NSArray *errors;
+
 // all style parsing is done on the queue
 #if OS_OBJECT_USE_OBJC
 @property(nonatomic, strong) dispatch_queue_t queue;
@@ -58,9 +60,11 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
     if (self) {
         self.queue = dispatch_queue_create("com.robertwijas.uiss.queue", DISPATCH_QUEUE_SERIAL);
         self.codeGenerator = [[UISSCodeGenerator alloc] init];
+        self.errors = @[];
 #if UISS_DEBUG
-        [self logDebugMessageOnce];
         self.configuredAppearanceProxies = [NSMutableArray array];
+        
+        [self logDebugMessageOnce];
 #endif
     }
     return self;
@@ -102,42 +106,41 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
 
 #pragma mark - Reloading Style
 
-- (void)configureAppearanceWithPropertySetters:(NSArray *)propertySetters errors:(NSMutableArray *)errors {
+- (void)configureAppearanceWithPropertySetters:(NSArray *)propertySetters {
     [[NSNotificationCenter defaultCenter] postNotificationName:UISSWillApplyStyleNotification object:self];
-
+    
 #if UISS_DEBUG
     [self resetAppearanceForPropertySetters:propertySetters];
 #endif
-
+    
     NSMutableArray *invocations = [NSMutableArray array];
-
+    
     for (UISSPropertySetter *propertySetter in propertySetters) {
         NSInvocation *invocation = propertySetter.invocation;
         if (invocation) {
             [invocations addObject:invocation];
         } else {
-            [errors addObject:[UISSError errorWithCode:UISSPropertySetterCreateInvocationError
-                                              userInfo:[NSDictionary dictionaryWithObject:propertySetter
-                                                                                   forKey:UISSPropertySetterErrorKey]]];
+            NSError *error = [UISSError errorWithCode:UISSPropertySetterCreateInvocationError userInfo:[NSDictionary dictionaryWithObject:propertySetter forKey:UISSPropertySetterErrorKey]];
+            self.errors = [[self errors] arrayByAddingObject:error];
         }
     }
-
+    
     for (NSInvocation *invocation in invocations) {
-        if ([self.configuredAppearanceProxies containsObject:invocation.target] == NO) {
-            [self.configuredAppearanceProxies addObject:invocation.target];
+        if ([[self configuredAppearanceProxies] containsObject:[invocation target]] == NO) {
+            [[self configuredAppearanceProxies] addObject:[invocation target]];
         }
-
+        
         [invocation invoke];
     }
-
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:UISSDidApplyStyleNotification object:self];
 }
 
-- (void)reloadWithURL:(NSURL *)URL;{
-    [self reloadWithURL:URL delay:0];
+- (void)applyURL:(NSURL *)URL;{
+    [self applyURL:URL delay:0];
 }
 
-- (void)reloadWithURL:(NSURL *)URL delay:(NSTimeInterval)delay;{
+- (void)applyURL:(NSURL *)URL delay:(NSTimeInterval)delay;{
     self.style = [UISSStyle styleWithURL:URL];
     
     if (delay > 0) {
@@ -145,54 +148,53 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
         
         [self updateDelayLoadTimer];
     } else {
-        [self reload];
+        [self applyAsynchronously];
     }
 }
 
-- (void)reload {
-    dispatch_async(self.queue, ^{
-        // if new data downloaded
-        if ([self.style downloadData]) {
-            UIUserInterfaceIdiom userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
-
-            [self.style parseDictionaryForUserInterfaceIdiom:userInterfaceIdiom withConfig:self.config];
-            NSArray *propertySetters = [self.style propertySettersForUserInterfaceIdiom:userInterfaceIdiom];
-
-            if (propertySetters) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self configureAppearanceWithPropertySetters:propertySetters errors:self.style.errors];
-                    [self refreshViews];
-                });
-            }
+- (void)applyAsynchronously {
+    dispatch_async([self queue], ^{
+        NSArray *errors = nil;
+        UIUserInterfaceIdiom userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+        NSArray *propertySetters = [[self style] parseForUserInterfaceIdiom:userInterfaceIdiom withConfig:[self config] errors:&errors];
+        if (propertySetters) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self configureAppearanceWithPropertySetters:propertySetters];
+                [self refreshViews];
+            });
+        } else if (errors && [errors count]) {
+            self.errors = [[self errors] arrayByAddingObjectsFromArray:errors];
         }
     });
 }
 
-- (void)load {
+- (void)apply {
     __block NSArray *propertySetters = nil;
-
+    
     dispatch_sync(self.queue, ^{
-        UIUserInterfaceIdiom userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
-        if ([self.style parseDictionaryForUserInterfaceIdiom:userInterfaceIdiom withConfig:self.config]) {
-            propertySetters = [self.style propertySettersForUserInterfaceIdiom:userInterfaceIdiom];
+        NSArray *errors = nil;
+        UIUserInterfaceIdiom userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+        propertySetters = [[self style] parseForUserInterfaceIdiom:userInterfaceIdiom withConfig:[self config] errors:&errors];
+        if (errors && [errors count]) {
+            self.errors = [[self errors] arrayByAddingObjectsFromArray:errors];
         }
     });
-
+    
     if (propertySetters) {
-        [self configureAppearanceWithPropertySetters:propertySetters errors:self.style.errors];
+        [self configureAppearanceWithPropertySetters:propertySetters];
     }
 }
 
 - (void)refreshViews {
     [[NSNotificationCenter defaultCenter] postNotificationName:UISSWillRefreshViewsNotification object:self];
-
+    
     for (UIWindow *window in UIApplication.sharedApplication.windows) {
         for (UIView *view in [[window subviews] copy]) {
             [view removeFromSuperview];
             [window addSubview:view];
         }
     }
-
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:UISSDidRefreshViewsNotification object:self];
 }
 
@@ -200,11 +202,11 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
 
 - (void)resetAppearanceForPropertySetters:(NSArray *)propertySetters {
     UISS_LOG(@"resetting appearance");
-
+    
     for (id appearanceProxy in self.configuredAppearanceProxies) {
         [[appearanceProxy _appearanceInvocations] removeAllObjects];
     }
-
+    
     [self.configuredAppearanceProxies removeAllObjects];
 }
 
@@ -215,16 +217,16 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
 - (void)generateCodeForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom
                               codeHandler:(void (^)(NSString *code, NSArray *errors))codeHandler {
     NSAssert(codeHandler, @"code handler required");
-
-    dispatch_async(self.queue, ^{
-        [self.style parseDictionaryForUserInterfaceIdiom:userInterfaceIdiom withConfig:self.config];
-        NSArray *propertySetters = [self.style propertySettersForUserInterfaceIdiom:userInterfaceIdiom];
-        NSMutableArray *errors = [NSMutableArray array];
-
-        NSString *code = [self.codeGenerator generateCodeForPropertySetters:propertySetters errors:errors];
-
+    
+    dispatch_async([self queue], ^{
+        NSArray *errors = nil;
+        UIUserInterfaceIdiom userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+        NSArray *propertySetters = [[self style] parseForUserInterfaceIdiom:userInterfaceIdiom withConfig:[self config] errors:&errors];
+        
+        NSString *code = [[self codeGenerator] generateCodeForPropertySetters:propertySetters errors:&errors];
+        
         dispatch_async(dispatch_get_main_queue(), ^{
-            codeHandler(code, errors);
+            codeHandler(code, [[self errors] arrayByAddingObjectsFromArray:errors]);
         });
     });
 }
@@ -232,11 +234,11 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
 #pragma mark - Auto Reload
 
 - (void)updateDelayLoadTimer {
-    if (self.delayTimeInterval > 0) {
+    if ([self delayTimeInterval] > 0) {
         self.delayLoadTimer = [NSTimer scheduledTimerWithTimeInterval:self.delayTimeInterval
-                                                                target:self
-                                                              selector:@selector(reload)
-                                                              userInfo:nil repeats:YES];
+                                                               target:self
+                                                             selector:@selector(applyAsynchronously)
+                                                             userInfo:nil repeats:YES];
     } else {
         self.delayLoadTimer = nil;
     }
@@ -250,27 +252,25 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
 #pragma mark - Status Window
 
 - (BOOL)debugEnabled {
-    return self.statusWindow != nil;
+    return [self statusWindow] != nil;
 }
 
 - (void)setDebugEnabled:(BOOL)debugEnabled {
     if (debugEnabled) {
-        if (self.statusWindowController == nil) {
+        if ([self statusWindowController] == nil) {
             // configure Console
             NSString *filePath = [[NSBundle mainBundle] pathForResource:@"uiss_console" ofType:@"json"
                                                             inDirectory:@"UISSResources.bundle"];
             if (filePath) {
-                UISS *uiss = [UISS defaultUISSWithURL:[NSURL fileURLWithPath:filePath]];
-                [uiss load];
+                [[UISS defaultUISSWithURL:[NSURL fileURLWithPath:filePath]] apply];
             }
-
+            
             self.statusWindow = [[UISSStatusWindow alloc] init];
-
+            
             UISSStatusViewController *statusWindowController = [[UISSStatusViewController alloc] init];
             statusWindowController.delegate = self;
-
+            
             self.statusWindow.rootViewController = statusWindowController;
-
             self.statusWindow.hidden = NO;
         }
     } else {
@@ -287,9 +287,9 @@ NSString *const UISSDidRefreshViewsNotification = @"UISSDidRefreshViewsNotificat
 - (void)presentConsoleViewController {
     UISSConsoleViewController *consoleViewController = [[UISSConsoleViewController alloc] initWithUISS:self];
     consoleViewController.modalPresentationStyle = UIModalPresentationFormSheet;
-
+    
     UIViewController *presentingViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
-
+    
     if (presentingViewController.presentedViewController) {
         if ([presentingViewController.presentedViewController isKindOfClass:[UISSConsoleViewController class]]) {
             [presentingViewController dismissViewControllerAnimated:YES completion:nil];

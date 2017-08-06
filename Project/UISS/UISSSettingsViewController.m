@@ -41,7 +41,7 @@
         return uiss.style.URL.absoluteString;
     };
     styleUrl.valueChangeHandler = ^(id value) {
-        [uiss reloadWithURL:[NSURL URLWithString:value]];
+        [uiss applyURL:[NSURL URLWithString:value]];
     };
 
     UISSSettingDescriptor *autoReloadInterval = [[UISSSettingDescriptor alloc] init];
@@ -52,7 +52,7 @@
         return [NSNumber numberWithDouble:uiss.delayTimeInterval];
     };
     autoReloadInterval.valueChangeHandler = ^(id value) {
-        [uiss reloadWithURL:[[uiss style] URL] delay:[value doubleValue]];
+        [uiss applyURL:[[uiss style] URL] delay:[value doubleValue]];
     };
 
     UISSSettingDescriptor *statusWindowEnabled = [[UISSSettingDescriptor alloc] init];

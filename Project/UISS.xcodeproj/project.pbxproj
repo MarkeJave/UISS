@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		085E3AB01F32C9F90014C6B5 /* uiss2.json in Resources */ = {isa = PBXBuildFile; fileRef = 085E3AAF1F32C9F90014C6B5 /* uiss2.json */; };
+		089109A51F362ADB00A33D32 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 089109A41F362ADB00A33D32 /* XCTest.framework */; };
 		C8D2B032C59FD11A701C83C8 /* UISSSettingDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = C8D2B021E9CB72A0ADBADDEE /* UISSSettingDescriptor.h */; };
 		C8D2B2E56583BF0D585ECFC4 /* UISSSettingsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C8D2B93A4CE1D6D274BC9D3D /* UISSSettingsViewController.h */; };
 		C8D2B403B49E791D1C7C7839 /* UIFont+UISS.m in Sources */ = {isa = PBXBuildFile; fileRef = C8D2B38720F19D0CC0E45FFB /* UIFont+UISS.m */; };
@@ -169,7 +170,6 @@
 		E1ED8BED1450D4E200302B61 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E1ED8BEC1450D4E200302B61 /* main.m */; };
 		E1ED8BF41450D4E200302B61 /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E1ED8BF21450D4E200302B61 /* MainStoryboard_iPhone.storyboard */; };
 		E1ED8BF71450D4E200302B61 /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E1ED8BF51450D4E200302B61 /* MainStoryboard_iPad.storyboard */; };
-		E1ED8C0C1450D4E200302B61 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B438C0143F668000F87518 /* SenTestingKit.framework */; };
 		E1ED8C0D1450D4E200302B61 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B43904143F702200F87518 /* UIKit.framework */; };
 		E1ED8C0E1450D4E200302B61 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1B438B2143F668000F87518 /* Foundation.framework */; };
 		E1ED8C161450D4E200302B61 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E1ED8C141450D4E200302B61 /* InfoPlist.strings */; };
@@ -202,6 +202,7 @@
 
 /* Begin PBXFileReference section */
 		085E3AAF1F32C9F90014C6B5 /* uiss2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = uiss2.json; sourceTree = "<group>"; };
+		089109A41F362ADB00A33D32 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		C8D2B021E9CB72A0ADBADDEE /* UISSSettingDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISSSettingDescriptor.h; sourceTree = "<group>"; };
 		C8D2B2AB02BB0DD97B7675C3 /* UISSImageResizingModeValueConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UISSImageResizingModeValueConverter.m; sourceTree = "<group>"; };
 		C8D2B38720F19D0CC0E45FFB /* UIFont+UISS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIFont+UISS.m"; sourceTree = "<group>"; };
@@ -348,7 +349,6 @@
 		E1B438B6143F668000F87518 /* UISS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UISS-Prefix.pch"; sourceTree = "<group>"; };
 		E1B438B7143F668000F87518 /* UISS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UISS.h; sourceTree = "<group>"; };
 		E1B438B8143F668000F87518 /* UISS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UISS.m; sourceTree = "<group>"; };
-		E1B438C0143F668000F87518 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		E1B438E1143F674200F87518 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		E1B43904143F702200F87518 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		E1BBEBED1598776C001F7A60 /* UISSStatusView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISSStatusView.h; sourceTree = "<group>"; };
@@ -411,7 +411,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E1ED8C0C1450D4E200302B61 /* SenTestingKit.framework in Frameworks */,
+				089109A51F362ADB00A33D32 /* XCTest.framework in Frameworks */,
 				E1ED8C0D1450D4E200302B61 /* UIKit.framework in Frameworks */,
 				E1ED8C0E1450D4E200302B61 /* Foundation.framework in Frameworks */,
 			);
@@ -813,10 +813,10 @@
 		E1B438B1143F668000F87518 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				089109A41F362ADB00A33D32 /* XCTest.framework */,
 				E12C10A7157ACB0C00F9008D /* QuartzCore.framework */,
 				E1B43904143F702200F87518 /* UIKit.framework */,
 				E1B438B2143F668000F87518 /* Foundation.framework */,
-				E1B438C0143F668000F87518 /* SenTestingKit.framework */,
 				E1B438E1143F674200F87518 /* CoreGraphics.framework */,
 				E1C67BDD158CE98A00E220BB /* CoreFoundation.framework */,
 			);
@@ -837,13 +837,13 @@
 				E1B438B7143F668000F87518 /* UISS.h */,
 				E1B438B8143F668000F87518 /* UISS.m */,
 				E1914CAD158F99BB00E04977 /* UISSStyle.h */,
+				E1914CAE158F99BB00E04977 /* UISSStyle.m */,
 				E145C8611584DCC70087BB1B /* UISSConfig.h */,
 				E145C8621584DCC70087BB1B /* UISSConfig.m */,
-				E1B438B5143F668000F87518 /* Supporting Files */,
-				E1914CAE158F99BB00E04977 /* UISSStyle.m */,
 				C8D2BB6EF9D36E1EAF33EC36 /* UISS+GestureRecognizers.m */,
 				C8D2B4CE65CB70FCA36103FD /* UISS+GestureRecognizers.h */,
 				E1C64FF516DFE8AF004861ED /* UISSMacros.h */,
+				E1B438B5143F668000F87518 /* Supporting Files */,
 			);
 			path = UISS;
 			sourceTree = "<group>";
@@ -1429,6 +1429,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "UISSDemo/UISSDemo-Prefix.pch";
@@ -1446,6 +1447,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "UISSDemo/UISSDemo-Prefix.pch";

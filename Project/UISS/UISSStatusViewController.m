@@ -130,12 +130,9 @@
 }
 
 - (BOOL)errorForNotification:(NSNotification *)notification; {
-    if ([notification.object isKindOfClass:[UISSStyle class]]) {
-        UISSStyle *style = notification.object;
-        return style.errors.count > 0;
-    } else if ([notification.object isKindOfClass:[UISS class]]) {
+    if ([notification.object isKindOfClass:[UISS class]]) {
         UISS *uiss = notification.object;
-        return uiss.style.errors.count > 0;
+        return uiss.errors.count > 0;
     }
 
     return NO;

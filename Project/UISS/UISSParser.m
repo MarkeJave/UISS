@@ -10,14 +10,43 @@
 #import "UISSError.h"
 #import "UISSParserContext.h"
 
+@interface UISSParser ()
+
+@property (nonatomic, strong) UISSConfig *config;
+@property (nonatomic, assign) UIUserInterfaceIdiom userInterfaceIdiom;
+@property (nonatomic, strong) NSString *groupPrefix;
+
+@end
+
 @implementation UISSParser
 
-- (id)init {
++ (instancetype)parserWithConfig:(UISSConfig *)config;{
+    return [[self alloc] initWithConfig:config];
+}
+
++ (instancetype)parserWithConfig:(UISSConfig *)config userInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom;{
+    return [[self alloc] initWithConfig:config userInterfaceIdiom:userInterfaceIdiom];
+}
+
++ (instancetype)parserWithConfig:(UISSConfig *)config userInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom groupPrefix:(NSString *)groupPrefix;{
+    return [[self alloc] initWithConfig:config userInterfaceIdiom:userInterfaceIdiom groupPrefix:groupPrefix];
+}
+
+- (instancetype)initWithConfig:(UISSConfig *)config{
+    return [self initWithConfig:config userInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
+}
+
+- (instancetype)initWithConfig:(UISSConfig *)config userInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom;{
+    return [self initWithConfig:config userInterfaceIdiom:userInterfaceIdiom groupPrefix:UISS_PARSER_DEFAULT_GROUP_PREFIX];
+}
+
+- (instancetype)initWithConfig:(UISSConfig *)config userInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom groupPrefix:(NSString *)groupPrefix;{
+    NSParameterAssert(config);
     self = [super init];
     if (self) {
-        self.config = [UISSConfig defaultConfig];
-        self.userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
-        self.groupPrefix = UISS_PARSER_DEFAULT_GROUP_PREFIX;
+        self.config = config;
+        self.userInterfaceIdiom = userInterfaceIdiom;
+        self.groupPrefix = groupPrefix;
     }
 
     return self;
@@ -124,18 +153,17 @@
 
 #pragma mark - Public
 
-- (NSArray *)parseDictionary:(NSDictionary *)dictionary errors:(NSMutableArray *)errors; {
+- (NSArray *)parseDictionary:(NSDictionary *)dictionary errors:(NSArray **)errorsPtr; {
     UISSParserContext *context = [[UISSParserContext alloc] init];
 
-    for (id <UISSDictionaryPreprocessor> preprocessor in self.config.preprocessors) {
-        dictionary = [preprocessor preprocess:dictionary userInterfaceIdiom:self.userInterfaceIdiom];
+    for (id <UISSDictionaryPreprocessor> preprocessor in [[self config] preprocessors]) {
+        dictionary = [preprocessor preprocess:dictionary userInterfaceIdiom:[self userInterfaceIdiom]];
     }
 
     [self parseDictionary:dictionary context:context];
+    UISSErrorsAdds(errorsPtr, [context errors]);
 
-    [errors addObjectsFromArray:context.errors];
-
-    return context.propertySetters;
+    return [context propertySetters];
 }
 
 - (NSArray *)parseDictionary:(NSDictionary *)dictionary; {

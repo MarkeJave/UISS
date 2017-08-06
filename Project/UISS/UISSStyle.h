@@ -16,15 +16,9 @@ extern NSString *const UISSStyleDidParseDictionaryNotification;
 
 @interface UISSStyle : NSObject
 
-@property (nonatomic, strong, readonly) NSURL *URL;
+@property (nonatomic, copy, readonly) NSURL *URL;
 
-@property (nonatomic, strong, readonly) NSData *data;
-@property (nonatomic, strong, readonly) NSDictionary *dictionary;
-
-@property (nonatomic, strong, readonly) NSArray *propertySettersPad;
-@property (nonatomic, strong, readonly) NSArray *propertySettersPhone;
-
-@property (nonatomic, strong, readonly) NSMutableArray *errors;
+@property (nonatomic, copy, readonly) NSData *data;
 
 + (instancetype)new UNAVAILABLE_ATTRIBUTE;
 - (instancetype)init UNAVAILABLE_ATTRIBUTE;
@@ -35,9 +29,7 @@ extern NSString *const UISSStyleDidParseDictionaryNotification;
 + (instancetype)styleWithData:(NSData *)data;
 - (instancetype)initWithData:(NSData *)data;
 
-- (BOOL)downloadData;
-- (BOOL)parseData;
-- (BOOL)parseDictionaryForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom withConfig:(UISSConfig *)config;
+- (NSArray *)parseForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom withConfig:(UISSConfig *)config errors:(NSArray **)errorsPtr;
 
 - (NSArray *)propertySettersForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom;
 

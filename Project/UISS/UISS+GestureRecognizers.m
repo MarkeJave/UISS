@@ -32,7 +32,7 @@
 
 - (void)reloadGestureRecognizerHandler:(UILongPressGestureRecognizer *)gestureRecognizer; {
     if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-        [self reload];
+        [self applyAsynchronously];
     }
 }
 
